@@ -320,14 +320,17 @@ public class F1MidiMappingGUI extends JPanel {
 		comboBoxMidiIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		        JComboBox comboBox = (JComboBox)e.getSource();
-		        String midiMsg = (String)comboBox.getSelectedItem();
-		        if (baseLayer) {
-		        	model.updateMidiIn(selectedControl, midiMsg);
-		        } else {
-		        	model.updateAltMidiIn(selectedControl, midiMsg);
+		        if (selectedControl != null)
+		        {
+			        JComboBox comboBox = (JComboBox)e.getSource();
+			        String midiMsg = (String)comboBox.getSelectedItem();
+			        if (baseLayer) {
+			        	model.updateMidiIn(selectedControl, midiMsg);
+			        } else {
+			        	model.updateAltMidiIn(selectedControl, midiMsg);
+			        }
+			        control2button.get(selectedControl).updateMidiInValue(midiMsg);
 		        }
-	        	control2button.get(selectedControl).updateMidiInValue(midiMsg);
 			}
 		});
 		JButton buttonMidiInLearn = new JButton("Learn");
@@ -342,14 +345,18 @@ public class F1MidiMappingGUI extends JPanel {
 		comboBoxMidiOut.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		        JComboBox comboBox = (JComboBox)e.getSource();
-		        String midiMsg = (String)comboBox.getSelectedItem();
-		        if (baseLayer) {
-		        	model.updateMidiOut(selectedControl, midiMsg);
-		        } else {
-		        	model.updateAltMidiOut(selectedControl, midiMsg);
+		        if (selectedControl != null)
+		        {
+			        JComboBox comboBox = (JComboBox)e.getSource();
+			        String midiMsg = (String)comboBox.getSelectedItem();
+			        if (baseLayer) {
+			        	model.updateMidiOut(selectedControl, midiMsg);
+			        } else {
+			        	model.updateAltMidiOut(selectedControl, midiMsg);
+	
+			        }
+			        	control2button.get(selectedControl).updateMidiOutValue(midiMsg);
 		        }
-	        	control2button.get(selectedControl).updateMidiOutValue(midiMsg);
 			}
 		});
 		JButton buttonMidiOutLearn = new JButton("Learn");
