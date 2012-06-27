@@ -270,7 +270,7 @@ public class F1MidiMappingGUI extends JPanel {
 		/******************************************
 		 * F1 Image
 		 ******************************************/
-		JLabel F1image = new JLabel(new ImageIcon(getClass().getResource("F1.jpg")));
+		JLabel F1image = new JLabel(new ImageIcon(getClass().getResource("/resources/F1.jpg")));
 		F1image.setLocation(ITEM_SPACING, ITEM_SPACING);
 		imagePanel.setSize(IMAGE_WIDTH, IMAGE_HEIGHT);
 		imagePanel.add(F1image);

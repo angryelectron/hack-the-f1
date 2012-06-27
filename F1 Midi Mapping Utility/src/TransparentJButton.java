@@ -94,27 +94,27 @@ class TransparentJButton extends JButton {
         	// if both are set, put a green dot in the corner
 	        	ImageIcon dot;
 	        	if (useSmallIcons) {
-	        		dot = new ImageIcon(getClass().getResource("midiInOutArrowIcon20x20.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiInOutArrowIcon20x20.png"));
 	        	} else {
-	        		dot = new ImageIcon(getClass().getResource("midiInOutArrowIcon32x32.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiInOutArrowIcon32x32.png"));
 	        	}
 	        	g2.drawImage(dot.getImage(), getWidth() - dot.getIconWidth(), getHeight() - dot.getIconHeight(),
 	        		dot.getIconWidth(), dot.getIconHeight(), null);
         	} else if (midiIn != "-") {
 	        	ImageIcon dot;
 	        	if (useSmallIcons) {
-	        		dot = new ImageIcon(getClass().getResource("midiInArrowIcon20x20.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiInArrowIcon20x20.png"));
 	        	} else {
-	        		dot = new ImageIcon(getClass().getResource("midiInArrowIcon32x32.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiInArrowIcon32x32.png"));
 	        	}
         		g2.drawImage(dot.getImage(), getWidth() - dot.getIconWidth(), getHeight() - dot.getIconHeight(),
         			dot.getIconWidth(), dot.getIconHeight(), null);
         	} else if (midiOut != "-") {
 	        	ImageIcon dot;
 	        	if (useSmallIcons) {
-	        		dot = new ImageIcon(getClass().getResource("midiOutArrowIcon20x20.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiOutArrowIcon20x20.png"));
 	        	} else {
-	        		dot = new ImageIcon(getClass().getResource("midiOutArrowIcon32x32.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiOutArrowIcon32x32.png"));
 	        	}
         		g2.drawImage(dot.getImage(), getWidth() - dot.getIconWidth(), getHeight() - dot.getIconHeight(),
         				dot.getIconWidth(), dot.getIconHeight(), null);	
@@ -123,9 +123,9 @@ class TransparentJButton extends JButton {
     		if (midiIn != "-") {
 	        	ImageIcon dot;
 	        	if (useSmallIcons) {
-	        		dot = new ImageIcon(getClass().getResource("midiInArrowIcon20x20.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiInArrowIcon20x20.png"));
 	        	} else {
-	        		dot = new ImageIcon(getClass().getResource("midiInArrowIcon32x32.png"));
+	        		dot = new ImageIcon(getClass().getResource("/resources/midiInArrowIcon32x32.png"));
 	        	}
         		g2.drawImage(dot.getImage(), getWidth() - dot.getIconWidth(), getHeight() - dot.getIconHeight(),
         				dot.getIconWidth(), dot.getIconHeight(), null);
@@ -133,14 +133,6 @@ class TransparentJButton extends JButton {
     	}
     	g2.dispose();
         g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-//    	//if (midiIn != null && midiOut != null) {
-//    	// if both are set, put a green dot in the corner
-//    	ImageIcon dot = new ImageIcon(getClass().getResource("dot.png"));
-//    		g2.drawImage(dot.getImage(), getWidth() - dot.getIconWidth(), getHeight() - dot.getIconHeight(),
-//    				dot.getIconWidth(), dot.getIconHeight(), null);
-//    	//}
-//        g2.dispose();
-//        g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
     }
     
     public void setSelected(boolean selected) {
