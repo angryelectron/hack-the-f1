@@ -177,11 +177,15 @@ public class F1MidiMappingGUI extends JPanel {
 	            			    JOptionPane.QUESTION_MESSAGE);
 	            		if (confirmContinueWithoutSavingReturnValue == JFileChooser.APPROVE_OPTION) {
 	            			model.populateFromFile(file);
+	            			radioButtonBaseLayer.setSelected(true);
+	            			baseLayer = true;
 	            			updateComboBoxSelections();
 	            			updateButtonMappingIcons();
 	    				}
 	    			} else {
 	    				model.populateFromFile(file);
+	    				radioButtonBaseLayer.setSelected(true);
+            			baseLayer = true;
             			updateComboBoxSelections();
             			updateButtonMappingIcons();
 	    			}
