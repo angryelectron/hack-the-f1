@@ -1,0 +1,32 @@
+Femulator - Traktor Kontrol F1 emulator for Arduino
+Copyright 2013 Andrew Bythell <abythell@ieee.org>
+http://angryelectron.com/projects/femulator
+
+This firmware, when loaded onto an Arduino UNO, will appear in the OS as a
+Traktor Kontrol F1 instead of a USB Serial device.  This allows it to send and
+receive signals to and from Traktor Pro 2.5's Remix Decks.  When used in
+conjuction with the Femulator software, it allows full control of the remix
+decks from any MIDI device. 
+
+To build the firmware:
+---
+1. Install an AVR development environment, including gcc-avr, avr-libc, make, and avrdude
+2. Download LUFA version 100807 from http://fourwalledcubicle.com/LUFA.php
+3. Extract LUFA into this directory and rename as ./LUFA
+4. Type "make"
+
+To program firmware using an in-system programmer:
+---
+1. Edit Makefile and set AVRDUDE_PROGRAMMER and AVRDUDE_PORT
+2. Connect ISP programmer to the UNO's ATMEGA8U2 ISP header (not the ATMEGA328!)
+3. Type "make program" 
+
+To program firmware using dfu-programmer via dfu-programmer or Flip:
+---
+1. Put the 8U2 into USB DFU mode:
+2. Assert and hold the 8U2's RESET line
+3. Assert and hold the 8U2's HWB line
+4. Release the 8U2's RESET line
+5. Release the 8U2's HWB line
+6. Confirm that the board enumerates as either "Arduino Uno DFU" or "Arduino Mega 2560 DFU"
+7. Type "make dfu" (OS X or Linux) or "make flip" (Windows)
