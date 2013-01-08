@@ -58,21 +58,22 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {
 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
 		
-	.USBSpecification       = VERSION_BCD(01.10),
-	.Class                  = 0x02,
+	.USBSpecification       = VERSION_BCD(02.00),
+	.Class                  = 0x00,
 	.SubClass               = 0x00,
 	.Protocol               = 0x00,
-				
+			
+	/* TODO: this should work out to 0x40 */	
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 		
-	.VendorID               = 0x03EB, // Atmel
+	.VendorID               = 0x17CC, 
 
-	.ProductID          	= 0x204B, // LUFA USB to Serial Demo Application
-	.ReleaseNumber          = 0x0001,
+	.ProductID          	= 0x1120, 
+	.ReleaseNumber          = 0x0009,
 		
 	.ManufacturerStrIndex   = 0x01,
 	.ProductStrIndex        = 0x02,
-	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
+	.SerialNumStrIndex      = 0x03,
 		
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
@@ -87,16 +88,17 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 	.Config = 
 		{
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
-
+			/* TODO: This should work out to 0x39 */
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
-			.TotalInterfaces        = 2,
+			.TotalInterfaces        = 1,
 				
 			.ConfigurationNumber    = 1,
-			.ConfigurationStrIndex  = NO_DESCRIPTOR,
+			.ConfigurationStrIndex  = 0x04,
 				
-			.ConfigAttributes       = (USB_CONFIG_ATTR_BUSPOWERED | USB_CONFIG_ATTR_SELFPOWERED),
+			/* .ConfigAttributes       = (USB_CONFIG_ATTR_BUSPOWERED | USB_CONFIG_ATTR_SELFPOWERED), */
+			.ConfigAttributes = 0x80,
 			
-			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(100)
+			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(480)
 		},
 		
 	.CDC_CCI_Interface = 
@@ -106,11 +108,11 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.InterfaceNumber        = 0,
 			.AlternateSetting       = 0,
 			
-			.TotalEndpoints         = 1,
+			.TotalEndpoints         = 2,
 				
-			.Class                  = 0x02,
-			.SubClass               = 0x02,
-			.Protocol               = 0x01,
+			.Class                  = 0x03,
+			.SubClass               = 0x00,
+			.Protocol               = 0x00,
 				
 			.InterfaceStrIndex      = NO_DESCRIPTOR
 		},
@@ -203,9 +205,9 @@ USB_Descriptor_String_t PROGMEM LanguageString =
  */
 USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
-	.Header                 = {.Size = USB_STRING_LEN(24), .Type = DTYPE_String},
+	.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
 		
-	.UnicodeString          = L"Arduino (www.arduino.cc)"
+	.UnicodeString          = L"Native Instruments"
 };
 
 /** Product descriptor string. This is a Unicode string containing the product's details in human readable form,
@@ -215,15 +217,30 @@ USB_Descriptor_String_t PROGMEM ManufacturerString =
 USB_Descriptor_String_t PROGMEM ProductString =
 {
 	#if (ARDUINO_MODEL_PID == ARDUINO_UNO_PID)
-		.Header                 = {.Size = USB_STRING_LEN(11), .Type = DTYPE_String},
+		.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
 			
-		.UnicodeString          = L"Arduino Uno"
+		.UnicodeString          = L"Traktor Kontrol F1"
 	#elif (ARDUINO_MODEL_PID == ARDUINO_MEGA2560_PID)
-		.Header                 = {.Size = USB_STRING_LEN(17), .Type = DTYPE_String},
+		.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
 			
-		.UnicodeString          = L"Arduino Mega 2560"
+		.UnicodeString          = L"Traktor Kontrol F1"
 	#endif
 	
+};
+
+USB_Descriptor_String_t PROGMEM ConfigurationString = 
+{
+	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
+	.UnicodeString = L"Traktor Kontrol F1 HID"
+};
+
+/* 
+ * SerialNumber descriptor string
+ */
+USB_Descriptor_String_t PROGMEM SerialString = 
+{
+	.Header = {.Size = USB_STRING_LEN(8), .Type = DTYPE_String},
+	.UnicodeString = L"FA52C4D0"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -266,6 +283,14 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 				case 0x02: 
 					Address = (void*)&ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
+					break;
+				case 0x03: 
+					Address = (void*)&SerialString;
+					Size    = pgm_read_byte(&SerialString.Header.Size);
+					break;
+				case 0x04: 
+					Address = (void*)&ConfigurationString;
+					Size    = pgm_read_byte(&ConfigurationString.Header.Size);
 					break;
 			}
 			
