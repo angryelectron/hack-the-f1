@@ -56,6 +56,7 @@ volatile struct
  */
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 	{
+/*
 		.Config = 
 			{
 				.ControlInterfaceNumber         = 0,
@@ -72,6 +73,7 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 				.NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
 				.NotificationEndpointDoubleBank = false,
 			},
+*/
 	};
 
 /** Main program entry point. This routine contains the overall program flow, including initial

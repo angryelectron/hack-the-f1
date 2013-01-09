@@ -36,6 +36,7 @@
  */
 
 #include "Descriptors.h"
+#include "HIDDescriptors.h"
 
 /* On some devices, there is a factory set internal serial number which can be automatically sent to the host as
  * the device's serial number when the Device Descriptor's .SerialNumStrIndex entry is set to USE_INTERNAL_SERIAL.
@@ -48,6 +49,7 @@
 #if (USE_INTERNAL_SERIAL == NO_DESCRIPTOR)
 	#warning USE_INTERNAL_SERIAL is not available on this AVR - please manually construct a device serial descriptor.
 #endif
+
 
 /** Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
  *  device characteristics, including the supported USB version, control endpoint size and the
@@ -63,7 +65,12 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 	.SubClass               = 0x00,
 	.Protocol               = 0x00,
 			
-	/* TODO: this should work out to 0x40 */	
+	/* The Endpoint0Size is defined in the Makefile:  
+	 *
+	 * 	LUFA_OPTS += -D FIXED_CONTROL_ENDPOINT_SIZE=64
+	 *
+	 * The device fails to enumerate if the size is explicity set here. 
+	 */
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 		
 	.VendorID               = 0x17CC, 
@@ -78,6 +85,7 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
 
+
 /** Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usage
  *  of the device in one of its supported configurations, including information about any device interfaces
  *  and endpoints. The descriptor is read out by the USB host during the enumeration process when selecting
@@ -90,25 +98,24 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
 			/* TODO: This should work out to 0x39 */
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
-			.TotalInterfaces        = 1,
+			.TotalInterfaces        = 2,
 				
 			.ConfigurationNumber    = 1,
+			/* TODO: This doesn't display the string under iConfiguration via lsusb */
 			.ConfigurationStrIndex  = 0x04,
-				
-			/* .ConfigAttributes       = (USB_CONFIG_ATTR_BUSPOWERED | USB_CONFIG_ATTR_SELFPOWERED), */
-			.ConfigAttributes = 0x80,
+			.ConfigAttributes 	= 0x80,
 			
 			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(480)
 		},
 		
-	.CDC_CCI_Interface = 
+	.HID_Interface = 
 		{
 			.Header                 = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
 
 			.InterfaceNumber        = 0,
 			.AlternateSetting       = 0,
-			
-			.TotalEndpoints         = 2,
+		
+			.TotalEndpoints         = 1,
 				
 			.Class                  = 0x03,
 			.SubClass               = 0x00,
@@ -117,75 +124,26 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.InterfaceStrIndex      = NO_DESCRIPTOR
 		},
 
-	.CDC_Functional_IntHeader = 
+	.HID_F1HID = 
 		{
-			.Header                 = {.Size = sizeof(CDC_FUNCTIONAL_DESCRIPTOR(2)), .Type = 0x24},
-			.SubType                = 0x00,
-			
-			.Data                   = {0x01, 0x10}
-		},
+			.Header 		= {.Size = sizeof(USB_HID_Descriptor_t), .Type = DTYPE_HID},
+			.HIDSpec                = VERSION_BCD(01.10),
+                        .CountryCode            = 0x00,
+                        .TotalReportDescriptors = 1,
+                        .HIDReportType          = DTYPE_Report,
+                        .HIDReportLength        = sizeof(F1Report)
 
-	.CDC_Functional_AbstractControlManagement = 
-		{
-			.Header                 = {.Size = sizeof(CDC_FUNCTIONAL_DESCRIPTOR(1)), .Type = 0x24},
-			.SubType                = 0x02,
-			
-			.Data                   = {0x06}
 		},
-		
-	.CDC_Functional_Union = 
-		{
-			.Header                 = {.Size = sizeof(CDC_FUNCTIONAL_DESCRIPTOR(2)), .Type = 0x24},
-			.SubType                = 0x06,
-			
-			.Data                   = {0x00, 0x01}
-		},
+	
+	.HID_ReportINEndpoint =
+                {
+                        .Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
+                        .EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_IN | F1_EPNUM),
+                        .Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+                        .EndpointSize           = F1_EPSIZE,
+                        .PollingIntervalMS      = 0x04
+                }
 
-	.CDC_NotificationEndpoint = 
-		{
-			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-			
-			.EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_IN | CDC_NOTIFICATION_EPNUM),
-			.Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-			.EndpointSize           = CDC_NOTIFICATION_EPSIZE,
-			.PollingIntervalMS      = 0xFF
-		},
-
-	.CDC_DCI_Interface = 
-		{
-			.Header                 = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
-
-			.InterfaceNumber        = 1,
-			.AlternateSetting       = 0,
-			
-			.TotalEndpoints         = 2,
-				
-			.Class                  = 0x0A,
-			.SubClass               = 0x00,
-			.Protocol               = 0x00,
-				
-			.InterfaceStrIndex      = NO_DESCRIPTOR
-		},
-
-	.CDC_DataOutEndpoint = 
-		{
-			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-			
-			.EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_OUT | CDC_RX_EPNUM),
-			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-			.EndpointSize           = CDC_TXRX_EPSIZE,
-			.PollingIntervalMS      = 0x01
-		},
-		
-	.CDC_DataInEndpoint = 
-		{
-			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-			
-			.EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_IN | CDC_TX_EPNUM),
-			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-			.EndpointSize           = CDC_TXRX_EPSIZE,
-			.PollingIntervalMS      = 0x01
-		}
 };
 
 /** Language descriptor structure. This descriptor, located in FLASH memory, is returned when the host requests
@@ -228,11 +186,6 @@ USB_Descriptor_String_t PROGMEM ProductString =
 	
 };
 
-USB_Descriptor_String_t PROGMEM ConfigurationString = 
-{
-	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
-	.UnicodeString = L"Traktor Kontrol F1 HID"
-};
 
 /* 
  * SerialNumber descriptor string
@@ -241,6 +194,12 @@ USB_Descriptor_String_t PROGMEM SerialString =
 {
 	.Header = {.Size = USB_STRING_LEN(8), .Type = DTYPE_String},
 	.UnicodeString = L"FA52C4D0"
+};
+
+USB_Descriptor_String_t PROGMEM ConfigurationString = 
+{
+	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
+	.UnicodeString = L"Traktor Kontrol F1 HID"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -293,8 +252,16 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 					Size    = pgm_read_byte(&ConfigurationString.Header.Size);
 					break;
 			}
-			
 			break;
+		case DTYPE_HID:
+                        Address = (void*)&ConfigurationDescriptor.HID_F1HID;
+                        Size    = sizeof(USB_HID_Descriptor_t);
+                        break;
+                case DTYPE_Report:
+                        Address = (void*)&F1Report;
+                        Size    = sizeof(F1Report);
+                        break;
+	
 	}
 	
 	*DescriptorAddress = Address;
