@@ -1,10 +1,11 @@
 /*
-             LUFA Library
-     Copyright (C) Dean Camera, 2010.
-              
-  dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
-*/
+ * Femulator Firmware - USB Descriptors
+ * Copyright 2013 Andrew Bythell, abythell@ieee.org
+ * http://angryelectron.com/femulator
+ *
+ * This descriptor will make an Arduino UNO appear as a Traktor Kontrol F1
+ * according to the "USBlyzer Report" at https://github.com/fatlimey/hack-the-f1
+ */
 
 /*
   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
@@ -42,27 +43,35 @@
 		#include <LUFA/Drivers/USB/USB.h>
 		#include <LUFA/Drivers/USB/Class/HID.h>
 		
-	/* Product-specific definitions: */
-		#define ARDUINO_UNO_PID			0x0001
-		#define ARDUINO_MEGA2560_PID		0x0010
-
 	/* Macros: */
 		#define F1_EPNUM	1
 		#define F1_EPSIZE	64
 		#define F1_REPORT_SIZE	64
+		#define DTYPE_DFUFunctional	0x21
 
 	/* Type Defines: */
-		/** Type define for the device configuration descriptor structure. This must be defined in the
-		 *  application code, as the configuration descriptor contains several sub-descriptors which
-		 *  vary between devices, and which describe the device's usage to the host.
-		 */
+
+		typedef struct
+		{
+			USB_Descriptor_Header_t Header;
+			uint8_t Attributes;
+			uint16_t DetachTimeout;
+			uint16_t TransferSize;
+		} USB_Descriptor_DFU_Functional_t;
+
+
 		typedef struct
 		{
 			USB_Descriptor_Configuration_Header_t    Config;
-			USB_Descriptor_Interface_t               HID_Interface;
-			USB_HID_Descriptor_t			 HID_F1HID;
-			USB_Descriptor_Endpoint_t		 HID_ReportINEndpoint;
-			USB_Descriptor_Endpoint_t		 HID_ReportOUTEndpoint;
+
+			USB_Descriptor_Interface_t	HID_Interface;
+			USB_HID_Descriptor_t		HID_F1HID;
+			USB_Descriptor_Endpoint_t	HID_ReportINEndpoint;
+			USB_Descriptor_Endpoint_t	HID_ReportOUTEndpoint;
+	
+			USB_Descriptor_Interface_t	DFU_Interface;	
+			USB_Descriptor_DFU_Functional_t	DFU_Functional;
+			
 		} USB_Descriptor_Configuration_t;
 
 	/* Function Prototypes: */

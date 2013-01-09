@@ -2,7 +2,10 @@
  * Femulator Firmware - USB Descriptors
  * Copyright 2013 Andrew Bythell, abythell@ieee.org
  * http://angryelectron.com/femulator
-*/
+ *
+ * This descriptor will make an Arduino UNO appear as a Traktor Kontrol F1
+ * according to the "USBlyzer Report" at https://github.com/fatlimey/hack-the-f1
+ */
 
 /*
   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
@@ -75,7 +78,6 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 	.Config = 
 		{
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
-			/* TODO: This should work out to 0x39 once the USB_Descriptor_Configuration_t is complete */
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
 			.TotalInterfaces        = 2,
 				
@@ -129,8 +131,27 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
                         .Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
                         .EndpointSize           = F1_EPSIZE,
                         .PollingIntervalMS      = 0x04
-                }
+                },
 
+	.DFU_Interface = 
+		{
+			.Header = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
+			.InterfaceNumber = 1,
+			.AlternateSetting = 0,
+			.TotalEndpoints = 0,
+			.Class = 0xFE,
+			.SubClass = 0x01,
+			.Protocol = 0x01,
+			.InterfaceStrIndex = 0x05 
+		},
+	.DFU_Functional =
+		{
+			.Header = {.Size = sizeof(USB_Descriptor_DFU_Functional_t), .Type = DTYPE_DFUFunctional},
+			.Attributes = 0x07,	/* CanDnload, CanUpload, ManifestationTolerant */ 
+			.DetachTimeout = 0x00FA,
+			.TransferSize = 0x0040,
+			/* .DFUSpecification = VERSION_BCD(01.10) */
+		}	
 
 };
 
@@ -166,6 +187,12 @@ USB_Descriptor_String_t PROGMEM ConfigurationString =
 {
 	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
 	.UnicodeString = L"Traktor Kontrol F1 HID"
+};
+
+USB_Descriptor_String_t PROGMEM DFUString = 
+{
+	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
+	.UnicodeString = L"Traktor Kontrol F1 DFU"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -216,6 +243,10 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 				case 0x04: 
 					Address = (void*)&ConfigurationString;
 					Size    = pgm_read_byte(&ConfigurationString.Header.Size);
+					break;
+				case 0x05: 
+					Address = (void*)&DFUString;
+					Size    = pgm_read_byte(&DFUString.Header.Size);
 					break;
 			}
 			break;
