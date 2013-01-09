@@ -62,6 +62,7 @@
 			USB_Descriptor_Interface_t               HID_Interface;
 			USB_HID_Descriptor_t			 HID_F1HID;
 			USB_Descriptor_Endpoint_t		 HID_ReportINEndpoint;
+			USB_Descriptor_Endpoint_t		 HID_ReportOUTEndpoint;
 		} USB_Descriptor_Configuration_t;
 
 	/* Function Prototypes: */

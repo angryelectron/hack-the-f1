@@ -1,9 +1,7 @@
 /*
-             LUFA Library
-     Copyright (C) Dean Camera, 2010.
-              
-  dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
+ * Femulator Firmware - USB Descriptors
+ * Copyright 2013 Andrew Bythell, abythell@ieee.org
+ * http://angryelectron.com/femulator
 */
 
 /*
@@ -28,27 +26,8 @@
   this software.
 */
 
-/** \file
- *
- *  USB Device Descriptors, for library use when in USB device mode. Descriptors are special 
- *  computer-readable structures which the host requests upon device enumeration, to determine
- *  the device's capabilities and functions.  
- */
-
 #include "Descriptors.h"
 #include "HIDDescriptors.h"
-
-/* On some devices, there is a factory set internal serial number which can be automatically sent to the host as
- * the device's serial number when the Device Descriptor's .SerialNumStrIndex entry is set to USE_INTERNAL_SERIAL.
- * This allows the host to track a device across insertions on different ports, allowing them to retain allocated
- * resources like COM port numbers and drivers. On demos using this feature, give a warning on unsupported devices
- * so that the user can supply their own serial number descriptor instead or remove the USE_INTERNAL_SERIAL value
- * from the Device Descriptor (forcing the host to generate a serial number for each device from the VID, PID and
- * port location).
- */
-#if (USE_INTERNAL_SERIAL == NO_DESCRIPTOR)
-	#warning USE_INTERNAL_SERIAL is not available on this AVR - please manually construct a device serial descriptor.
-#endif
 
 
 /** Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
@@ -59,7 +38,7 @@
 USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {
 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
-		
+	/* TODO: Arduino may not be capable of USB 2 */	
 	.USBSpecification       = VERSION_BCD(02.00),
 	.Class                  = 0x00,
 	.SubClass               = 0x00,
@@ -96,12 +75,11 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 	.Config = 
 		{
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
-			/* TODO: This should work out to 0x39 */
+			/* TODO: This should work out to 0x39 once the USB_Descriptor_Configuration_t is complete */
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
 			.TotalInterfaces        = 2,
 				
 			.ConfigurationNumber    = 1,
-			/* TODO: This doesn't display the string under iConfiguration via lsusb */
 			.ConfigurationStrIndex  = 0x04,
 			.ConfigAttributes 	= 0x80,
 			
@@ -115,7 +93,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.InterfaceNumber        = 0,
 			.AlternateSetting       = 0,
 		
-			.TotalEndpoints         = 1,
+			.TotalEndpoints         = 2,
 				
 			.Class                  = 0x03,
 			.SubClass               = 0x00,
@@ -142,13 +120,22 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
                         .Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
                         .EndpointSize           = F1_EPSIZE,
                         .PollingIntervalMS      = 0x04
+                },
+
+	.HID_ReportOUTEndpoint =
+                {
+                        .Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
+                        .EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_OUT | F1_EPNUM),
+                        .Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+                        .EndpointSize           = F1_EPSIZE,
+                        .PollingIntervalMS      = 0x04
                 }
+
 
 };
 
-/** Language descriptor structure. This descriptor, located in FLASH memory, is returned when the host requests
- *  the string descriptor with index 0 (the first index). It is actually an array of 16-bit integers, which indicate
- *  via the language ID table available at USB.org what languages the device supports for its string descriptors.
+/** 
+ *  Descriptor Strings 
  */
 USB_Descriptor_String_t PROGMEM LanguageString =
 {
@@ -157,39 +144,18 @@ USB_Descriptor_String_t PROGMEM LanguageString =
 	.UnicodeString          = {LANGUAGE_ID_ENG}
 };
 
-/** Manufacturer descriptor string. This is a Unicode string containing the manufacturer's details in human readable
- *  form, and is read out upon request by the host when the appropriate string ID is requested, listed in the Device
- *  Descriptor.
- */
 USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
-		
 	.UnicodeString          = L"Native Instruments"
 };
 
-/** Product descriptor string. This is a Unicode string containing the product's details in human readable form,
- *  and is read out upon request by the host when the appropriate string ID is requested, listed in the Device
- *  Descriptor.
- */
 USB_Descriptor_String_t PROGMEM ProductString =
 {
-	#if (ARDUINO_MODEL_PID == ARDUINO_UNO_PID)
-		.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
-			
-		.UnicodeString          = L"Traktor Kontrol F1"
-	#elif (ARDUINO_MODEL_PID == ARDUINO_MEGA2560_PID)
-		.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
-			
-		.UnicodeString          = L"Traktor Kontrol F1"
-	#endif
-	
+	.Header = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
+	.UnicodeString = L"Traktor Kontrol F1"
 };
 
-
-/* 
- * SerialNumber descriptor string
- */
 USB_Descriptor_String_t PROGMEM SerialString = 
 {
 	.Header = {.Size = USB_STRING_LEN(8), .Type = DTYPE_String},
