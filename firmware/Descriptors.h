@@ -49,6 +49,7 @@
 	/* Macros: */
 		#define F1_EPNUM	1
 		#define F1_EPSIZE	64
+		#define F1_REPORT_SIZE	64
 
 	/* Type Defines: */
 		/** Type define for the device configuration descriptor structure. This must be defined in the
