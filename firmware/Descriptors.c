@@ -41,7 +41,6 @@
 USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {
 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
-	/* TODO: Arduino may not be capable of USB 2 */	
 	.USBSpecification       = VERSION_BCD(02.00),
 	.Class                  = 0x00,
 	.SubClass               = 0x00,
@@ -62,7 +61,7 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 		
 	.ManufacturerStrIndex   = 0x01,
 	.ProductStrIndex        = 0x02,
-	.SerialNumStrIndex      = 0x03,
+	.SerialNumStrIndex      = 0x06,
 		
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
@@ -236,7 +235,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 					Address = (void*)&ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
-				case 0x03: 
+				case 0x06: 
 					Address = (void*)&SerialString;
 					Size    = pgm_read_byte(&SerialString.Header.Size);
 					break;

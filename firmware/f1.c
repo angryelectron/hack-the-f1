@@ -47,6 +47,65 @@ struct
 	uint8_t  ReportData[F1_REPORT_SIZE];
 } HIDReportEcho;
 
+#define SEGMENT_ON	64
+#define SEGMENT_OFF	0
+#define BUTTON_LED_ON	0x7F
+#define BUTTON_LED_OFF	0
+#define F1_ID		80
+#define F1_VERSION	1
+
+/*
+ * F1 Output Report.  Based on data from
+ * https://github.com/fatlimey/hack-the-f1/blob/master/Native%20Instruments%20F1%20HID%20Protocol%20Analysis.html
+ */
+struct
+{
+	uint8_t id;			/* F1_ID  */
+	uint8_t rightDigit[8];		/* Each byte in the array corresponds to segment: DP, G, C, B, A, F, E, D */
+	uint8_t leftDigit[8];		/* Value = SEGMENT_ON or SEGMENT_OFF */ 
+	uint8_t browse;			/* Illuminated button state : BUTTON_LED_ON or BUTTON_LED_OFF */ 
+	uint8_t size;
+	uint8_t type;
+	uint8_t reverse;
+	uint8_t shift;
+	uint8_t capture;
+	uint8_t quant;
+	uint8_t sync;
+	uint8_t pad_1[3];		/* Each byte in the array corresponds to color: Blue, Red, Green */
+	uint8_t pad_2[3];		/* Min = 0, Max = 0x7D */
+	uint8_t pad_3[3];		/* eg. White = {73, 73, 73} */
+	uint8_t pad_4[3];
+	uint8_t pad_5[3];
+	uint8_t pad_6[3];
+	uint8_t pad_7[3];
+	uint8_t pad_8[3];
+	uint8_t pad_9[3];
+	uint8_t pad_10[3];
+	uint8_t pad_11[3];
+	uint8_t pad_12[3];
+	uint8_t pad_13[3];
+	uint8_t pad_14[3];
+	uint8_t pad_15[3];
+	uint8_t pad_16[3];
+	uint8_t stop_4[2];		/* Each byte in array corresponds to one of two LEDS */ 
+	uint8_t stop_3[2];		/* TODO: find out what values to use */ 
+	uint8_t stop_2[2];
+	uint8_t stop_1[2];
+	
+} F1OutputReport_t;
+
+/* 
+ * F1 Input Report.  Based on data from the same document as the Output Report
+ */
+struct
+{
+	uint8_t version;		/* F1_VERSION */ 
+	uint16_t pad_state;		/* TODO: document how bits map to pads/keys */
+	uint16_t key_state;
+	uint8_t  knob_value;		/* values: 0 - 0xFF */ 
+	uint8_t  analog_inputs[16];	/* TODO: break this out into separate channels */ 
+} F1InputReport_t;
+
 /** LUFA HID Class driver interface configuration and state information. This structure is
  *  passed to all HID Class driver functions, so that multiple instances of the same class
  *  within a device can be differentiated from one another.
@@ -56,11 +115,9 @@ USB_ClassInfo_HID_Device_t Generic_HID_Interface =
 		.Config =
 			{
 				.InterfaceNumber              = 0,
-
 				.ReportINEndpointNumber       = F1_EPNUM,
 				.ReportINEndpointSize         = F1_EPSIZE,
 				.ReportINEndpointDoubleBank   = false,
-				
 				.PrevReportINBuffer           = PrevHIDReportBuffer,
 				.PrevReportINBufferSize       = sizeof(PrevHIDReportBuffer),
 			},
