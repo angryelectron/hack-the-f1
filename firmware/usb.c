@@ -34,6 +34,7 @@
  *  the demo and is responsible for the initial application hardware configuration.
  */
 
+#include "usb.h"
 #include "f1.h"
 
 /** Buffer to hold the previously generated HID report, for comparison purposes inside the HID class driver. */
