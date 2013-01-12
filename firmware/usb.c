@@ -1,10 +1,9 @@
 /*
-             LUFA Library
-     Copyright (C) Dean Camera, 2010.
-              
-  dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
-*/
+ * Femulator Firmware - USB Device
+ * Copyright 2013 Andrew Bythell, abythell@ieee.org
+ * http://angryelectron.com/femulator
+ *
+ */
 
 /*
   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
@@ -28,26 +27,13 @@
   this software.
 */
 
-/** \file
- *
- *  Main source file for the GenericHID demo. This file contains the main tasks of
- *  the demo and is responsible for the initial application hardware configuration.
- */
-
 #include "usb.h"
 #include "f1.h"
 
-/** Buffer to hold the previously generated HID report, for comparison purposes inside the HID class driver. */
-uint8_t PrevHIDReportBuffer[F1_REPORT_SIZE];
-
-/** Structure to contain reports from the host, so that they can be echoed back upon request */
-struct
-{
-	uint8_t  ReportID;
-	uint16_t ReportSize;
-	uint8_t  ReportData[F1_REPORT_SIZE];
-} HIDReportEcho;
-
+/*
+ * When true, the HID Input report will be sent at the next Endpoint interrupt
+ */
+bool b_inputUpdated = false;
 
 /** LUFA HID Class driver interface configuration and state information. This structure is
  *  passed to all HID Class driver functions, so that multiple instances of the same class
@@ -61,16 +47,21 @@ USB_ClassInfo_HID_Device_t Generic_HID_Interface =
 				.ReportINEndpointNumber       = F1_EPNUM,
 				.ReportINEndpointSize         = F1_EPSIZE,
 				.ReportINEndpointDoubleBank   = false,
-				.PrevReportINBuffer           = PrevHIDReportBuffer,
-				.PrevReportINBufferSize       = sizeof(PrevHIDReportBuffer),
+				.PrevReportINBuffer           = NULL, 
+				.PrevReportINBufferSize       = 64,
 			},
 	};
 
-/** Main program entry point. This routine contains the overall program flow, including initial
- *  setup of all components and the main program loop.
+/*
+ *  Main entry point.
+ *
+ *  Currently this contains some code to assist with debugging.  When the
+ *  Arduino is loaded with the femulator sketch, toggling Pin 13 will toggle
+ *  all the F1 pads and send an Input report. 
  */
 int main(void)
 {
+	char prevRxByte;
 	SetupHardware();
 	
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
@@ -80,6 +71,23 @@ int main(void)
 	{
 		HID_Device_USBTask(&Generic_HID_Interface);
 		USB_USBTask();
+
+		char state = Serial_RxByte();
+		if (state == prevRxByte) {	
+			b_inputUpdated = false;
+		} else {
+			if (state == '1') {
+				F1InputData.pad_state = 0xFFFF;
+				LEDs_SetAllLEDs(LEDS_TX);
+			} else if (state == '0') {
+				F1InputData.pad_state = 0x0000;
+				LEDs_SetAllLEDs(LEDS_RX);
+			} else {
+				LEDs_SetAllLEDs(LEDS_NONE);
+			}
+			b_inputUpdated = true;
+			prevRxByte = state;
+		}	
 	}
 }
 
@@ -138,15 +146,9 @@ void EVENT_USB_Device_StartOfFrame(void)
 	HID_Device_MillisecondElapsed(&Generic_HID_Interface);
 }
 
-/** HID class driver callback function for the creation of HID reports to the host.
- *
- *  \param[in]     HIDInterfaceInfo  Pointer to the HID class interface configuration structure being referenced
- *  \param[in,out] ReportID    Report ID requested by the host if non-zero, otherwise callback should set to the generated report ID
- *  \param[in]     ReportType  Type of the report to create, either REPORT_ITEM_TYPE_In or REPORT_ITEM_TYPE_Feature
- *  \param[out]    ReportData  Pointer to a buffer where the created report should be stored
- *  \param[out]    ReportSize  Number of bytes written in the report (or zero if no report is to be sent
- *
- *  \return Boolean true to force the sending of the report, false to let the library determine if it needs to be sent
+/*
+ *  Create a report, which the LUFA framework will send to the Host. 
+ *  Used to update Traktor with the current state of the controls. 
  */
 bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
                                          uint8_t* const ReportID,
@@ -154,22 +156,24 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
                                          void* ReportData,
                                          uint16_t* const ReportSize)
 {
-	if (HIDReportEcho.ReportID)
-	  *ReportID = HIDReportEcho.ReportID;
+	/* 
+ 	 * TODO: currently this only sends data back to Traktor.
+ 	 * How can this also send F1OutputData back to Software/MIDI?
+	 */
+	*ReportID = F1_INPUT_REPORT_ID; 
+	memcpy(ReportData, &F1InputData, sizeof(F1InputData));
+	*ReportSize = sizeof(F1InputData);
 
-	memcpy(ReportData, HIDReportEcho.ReportData, HIDReportEcho.ReportSize);
-	
-	*ReportSize = HIDReportEcho.ReportSize;
-	return true;
+	/*
+	 * Device-initiated input reports are only sent when true.  By
+	 * managing b_inputUpdated, the device will only issue Input reports
+	 * when the control state has changed.
+	 */
+	return b_inputUpdated; 
 }
 
-/** HID class driver callback function for the processing of HID reports from the host.
- *
- *  \param[in] HIDInterfaceInfo  Pointer to the HID class interface configuration structure being referenced
- *  \param[in] ReportID    Report ID of the received report from the host
- *  \param[in] ReportType  The type of report that the host has sent, either REPORT_ITEM_TYPE_Out or REPORT_ITEM_TYPE_Feature
- *  \param[in] ReportData  Pointer to a buffer where the created report has been stored
- *  \param[in] ReportSize  Size in bytes of the received HID report
+/* 
+ *  Get a report from the Host.
  */
 void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
                                           const uint8_t ReportID,
@@ -179,17 +183,25 @@ void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDI
 {
 	switch(ReportID) {
 		case F1_INPUT_REPORT_ID:
+			/* receive input data from software/MIDI device */
+			/* TODO: confirm that LUFA will automatically send F1InputData
+			 * to Traktor at the next interrupt interval 
+			 */
+			memcpy(&F1InputData, ReportData, ReportSize);
 			break;
 		case F1_OUTPUT_REPORT_ID:
+			/* receive data from Traktor */
+			/* TODO: pass the data to Software/MIDI */ 
+			memcpy(&F1OutputData, ReportData, ReportSize);
 			break; 
 		case F1_DFU_REPORT_ID1:
 		case F1_DFU_REPORT_ID2:
 		case F1_DFU_REPORT_ID3:
+			/* DFU is used to update the firmware on the F1.
+ 			 * Femulator shouldn't support this, unless DFU is used
+			 * for other functions.
+			 */ 
 			break;
 	}
-/*
-	HIDReportEcho.ReportID   = ReportID;
-	HIDReportEcho.ReportSize = ReportSize;
-	memcpy(HIDReportEcho.ReportData, ReportData, ReportSize);
-*/
+
 }

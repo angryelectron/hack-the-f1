@@ -1,9 +1,10 @@
-/** HID class report descriptor. This is a special descriptor constructed with values from the
-* USBIF HID class specification to describe the reports and capabilities of the HID device. This
-* descriptor is parsed by the host and its contents used to determine what data (and in what encoding)
-* the device will send, and what it may be sent back from the host. Refer to the HID specification for
-* more details on HID report descriptors.
-*/
+/*
+ * Femulator Firmware - USB Report Descriptors
+ * Copyright 2013 Andrew Bythell, abythell@ieee.org
+ * http://angryelectron.com/femulator
+ *
+ */
+
 USB_Descriptor_HIDReport_Datatype_t PROGMEM F1Report[] = 
 {
 	0x06, 0x01, 0xFF,

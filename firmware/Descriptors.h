@@ -1,10 +1,7 @@
 /*
- * Femulator Firmware - USB Descriptors
+ * Femulator Firmware - USB Descriptor Header
  * Copyright 2013 Andrew Bythell, abythell@ieee.org
  * http://angryelectron.com/femulator
- *
- * This descriptor will make an Arduino UNO appear as a Traktor Kontrol F1
- * according to the "USBlyzer Report" at https://github.com/fatlimey/hack-the-f1
  */
 
 /*
@@ -46,7 +43,6 @@
 	/* Macros: */
 		#define F1_EPNUM	1
 		#define F1_EPSIZE	64
-		#define F1_REPORT_SIZE	64
 		#define DTYPE_DFUFunctional	0x21
 
 	/* Type Defines: */

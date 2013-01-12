@@ -3,8 +3,6 @@
  * Copyright 2013 Andrew Bythell, abythell@ieee.org
  * http://angryelectron.com/femulator
  *
- * This descriptor will make an Arduino UNO appear as a Traktor Kontrol F1
- * according to the "USBlyzer Report" at https://github.com/fatlimey/hack-the-f1
  */
 
 /*

@@ -1,10 +1,9 @@
 /*
-             LUFA Library
-     Copyright (C) Dean Camera, 2010.
-              
-  dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
-*/
+ * Femulator Firmware - USB Device Header
+ * Copyright 2013 Andrew Bythell, abythell@ieee.org
+ * http://angryelectron.com/femulator
+ *
+ */
 
 /*
   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
@@ -28,13 +27,8 @@
   this software.
 */
 
-/** \file
- *
- *  Header file for GenericHID.c.
- */
- 
-#ifndef _GENERICHID_H_
-#define _GENERICHID_H_
+#ifndef	USB_H 
+#define USB_H 
 
 	/* Includes: */
 		#include <avr/io.h>
@@ -53,13 +47,13 @@
 
 	/* Macros: */
 		/** LED mask for the library LED driver, to indicate that the USB interface is not ready. */
-		#define LEDMASK_USB_NOTREADY      LEDS_NONE
+		#define LEDMASK_USB_NOTREADY      LEDS_BOTH
 
 		/** LED mask for the library LED driver, to indicate that the USB interface is enumerating. */
-		#define LEDMASK_USB_ENUMERATING  LEDS_TX
+		#define LEDMASK_USB_ENUMERATING  LEDS_NONE
 
 		/** LED mask for the library LED driver, to indicate that the USB interface is ready. */
-		#define LEDMASK_USB_READY        LEDS_RX 
+		#define LEDMASK_USB_READY        LEDS_NONE 
 
 		/** LED mask for the library LED driver, to indicate that an error has occurred in the USB interface. */
 		#define LEDMASK_USB_ERROR       LEDS_BOTH 
@@ -84,4 +78,4 @@
 		                                          const void* ReportData,
 		                                          const uint16_t ReportSize);
 		
-#endif
+#endif /* USB_H */
