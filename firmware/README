@@ -2,7 +2,7 @@ Femulator - Traktor Kontrol F1 emulator for AVR
 Copyright 2013 Andrew Bythell <abythell@ieee.org>
 http://angryelectron.com/projects/femulator
 
-This firmware, when loaded onto an Arduino UNO, Teensy, or other LUFA-supported target, 
+This firmware, when loaded onto an Arduino, Teensy, or other LUFA-supported target, 
 will appear in the OS as a Traktor Kontrol F1.  This allows it to send and receive signals
 to and from Traktor Pro 2.5's Remix Decks.  When used in conjuction with the Femulator software,
 it allows full control of the remix decks from any MIDI device. 
