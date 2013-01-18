@@ -5,7 +5,7 @@
  *
  */
 
-USB_Descriptor_HIDReport_Datatype_t PROGMEM F1Report[] = 
+const USB_Descriptor_HIDReport_Datatype_t PROGMEM F1Report[] = 
 {
 	0x06, 0x01, 0xFF,
 	0x09, 0x00,
