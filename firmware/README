@@ -2,10 +2,11 @@ Femulator - Traktor Kontrol F1 emulator for AVR
 Copyright 2013 Andrew Bythell <abythell@ieee.org>
 http://angryelectron.com/projects/femulator
 
-This firmware, when loaded onto an Arduino, Teensy, or other LUFA-supported target, 
-will appear in the OS as a Traktor Kontrol F1.  This allows it to send and receive signals
-to and from Traktor Pro 2.5's Remix Decks.  When used in conjuction with the Femulator software,
-it allows full control of the remix decks from any MIDI device. 
+This firmware, when loaded onto an Arduino, Teensy, or other LUFA-supported
+target, will appear in the OS as a Traktor Kontrol F1.  This allows it to send
+and receive signals to and from Traktor Pro 2.5's Remix Decks.  When used in
+conjuction with the Femulator software, it allows full control of the remix
+decks from any MIDI device. 
 
 It has been developed and tested using an Arduino UNO / ATMEGA8U2.
 
@@ -22,8 +23,9 @@ To program firmware using an in-system programmer:
 2. Connect ISP programmer to the device's ISP header.
 3. Type "make avrdude" 
 
-Note, if flashing an UNO, use the ISP header for the ATMEGA8U2 (solder it yourself).  Don't use the ISP
-header for the ATMEGA328, or you'll overwrite the Arduino bootloader.
+Note, if flashing an UNO, use the ISP header for the ATMEGA8U2 (solder it
+yourself).  Don't use the ISP header for the ATMEGA328, or you'll overwrite the
+Arduino bootloader.
 
 To program firmware using dfu-programmer or flip:
 ---
