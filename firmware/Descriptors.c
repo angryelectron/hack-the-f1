@@ -175,38 +175,38 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 /** 
  *  Descriptor Strings 
  */
-USB_Descriptor_String_t PROGMEM LanguageString =
+const USB_Descriptor_String_t PROGMEM LanguageString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(1), .Type = DTYPE_String},
 		
 	.UnicodeString          = {LANGUAGE_ID_ENG}
 };
 
-USB_Descriptor_String_t PROGMEM ManufacturerString =
+const USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
 	.UnicodeString          = L"Native Instruments"
 };
 
-USB_Descriptor_String_t PROGMEM ProductString =
+const USB_Descriptor_String_t PROGMEM ProductString =
 {
 	.Header = {.Size = USB_STRING_LEN(18), .Type = DTYPE_String},
 	.UnicodeString = L"Traktor Kontrol F1"
 };
 
-USB_Descriptor_String_t PROGMEM SerialString = 
+const USB_Descriptor_String_t PROGMEM SerialString = 
 {
 	.Header = {.Size = USB_STRING_LEN(8), .Type = DTYPE_String},
 	.UnicodeString = L"FA52C4D0"
 };
 
-USB_Descriptor_String_t PROGMEM ConfigurationString = 
+const USB_Descriptor_String_t PROGMEM ConfigurationString = 
 {
 	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
 	.UnicodeString = L"Traktor Kontrol F1 HID"
 };
 
-USB_Descriptor_String_t PROGMEM DFUString = 
+const USB_Descriptor_String_t PROGMEM DFUString = 
 {
 	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
 	.UnicodeString = L"Traktor Kontrol F1 DFU"

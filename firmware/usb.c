@@ -67,7 +67,7 @@ USB_ClassInfo_HID_Device_t Generic_HID_Interface =
  */
 int main(void)
 {
-	char prevRxByte = ' ';
+	char prevRxByte;
 	SetupHardware();
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
