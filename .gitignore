@@ -4,3 +4,9 @@
 *.jar
 *.war
 *.ear
+/femulator/libf1/nbproject/private/
+/femulator/libf1/build/
+/femulator/libf1/dist/
+/femulator/f1test/nbproject/private/
+/femulator/f1test/build/
+/femulator/f1test/dist/
