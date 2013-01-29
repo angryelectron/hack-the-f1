@@ -67,7 +67,6 @@ USB_ClassInfo_HID_Device_t Generic_HID_Interface =
  */
 int main(void)
 {
-	char prevRxByte;
 	SetupHardware();
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
@@ -77,21 +76,6 @@ int main(void)
 	{
 		HID_Device_USBTask(&Generic_HID_Interface);
 		USB_USBTask();
-
-		char state = Serial_ReceiveByte();
-		if (state == prevRxByte) {	
-			b_inputUpdated = false;
-		} else {
-			if (state == '1') {
-				F1InputData.pad_state = 0xFFFF;
-			} else if (state == '0') {
-				F1InputData.pad_state = 0x0000;
-			} else {
-				/* ?? */
-			}
-			b_inputUpdated = true;
-			prevRxByte = state;
-		}	
 	}
 
 }
@@ -107,7 +91,6 @@ void SetupHardware(void)
 	/* clock_prescale_set(clock_div_1); */
 
 	/* Hardware Initialization */
-	Serial_Init(9600, false);
 	LEDs_Init();
 	USB_Init();
 }
@@ -164,6 +147,7 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
                                          void* ReportData,
                                          uint16_t* const ReportSize)
 {
+
 	/* 
  	 * TODO: currently this only sends data back to Traktor.
  	 * How can this also send F1OutputData back to Software/MIDI?
@@ -177,7 +161,11 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 	 * managing b_inputUpdated, the device will only issue Input reports
 	 * when the control state has changed.
 	 */
-	return b_inputUpdated; 
+	if (b_inputUpdated) {
+		b_inputUpdated = false;
+		return true;
+	}
+	return false; 
 
 
 }
@@ -197,12 +185,13 @@ void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDI
                                           const uint16_t ReportSize)
 {
 	switch(ReportID) {
-		case F1_INPUT_REPORT_ID:
+		case FEMULATOR_OUTPUT_REPORT_ID: 
 			/* receive input data from software/MIDI device */
 			/* TODO: confirm that LUFA will automatically send F1InputData
 			 * to Traktor at the next interrupt interval 
 			 */
-			memcpy(&F1InputData, ReportData, ReportSize);
+			//memcpy(&F1InputData, ReportData, ReportSize);
+			//b_inputUpdated = true;
 			break;
 		case F1_OUTPUT_REPORT_ID:
 			/* receive data from Traktor */

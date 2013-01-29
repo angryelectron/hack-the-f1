@@ -15,6 +15,7 @@
 #define F1_DFU_REPORT_ID1	240
 #define F1_DFU_REPORT_ID2	208
 #define F1_DFU_REPORT_ID3	241
+#define FEMULATOR_OUTPUT_REPORT_ID 3
 
 /*
  * F1 Output Data Report, ID 128.  Based on data from

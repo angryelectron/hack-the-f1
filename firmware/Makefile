@@ -26,7 +26,6 @@ AVRDUDE_PROGRAMMER = stk500v2
 #AVRDUDE_PORT = /dev/ttyS0
 AVRDUDE_PORT = /dev/tty.PL2303-00004006
 
-
 # Default target
 all:
 
