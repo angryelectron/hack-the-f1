@@ -117,18 +117,18 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 		{
 			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
 
-			.EndpointAddress        = F1_IN_EPADDR,
+			.EndpointAddress        = GENERIC_IN_EPADDR,
 			.Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-			.EndpointSize           = F1_EPSIZE,
+			.EndpointSize           = GENERIC_EPSIZE,
 			.PollingIntervalMS      = 0x04
 		},
 
 	.HID_ReportOUTEndpoint =
                 {
                         .Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-                        .EndpointAddress        = F1_OUT_EPADDR, 
+                        .EndpointAddress        = GENERIC_OUT_EPADDR, 
                         .Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-                        .EndpointSize           = F1_EPSIZE,
+                        .EndpointSize           = GENERIC_EPSIZE,
                         .PollingIntervalMS      = 0x04
                 },
 

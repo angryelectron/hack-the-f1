@@ -63,12 +63,16 @@
 		} USB_Descriptor_Configuration_t;
 
 	/* Macros: */
-		/** Endpoint address of the Generic HID reporting IN endpoint. */
-		#define F1_IN_EPADDR         (ENDPOINT_DIR_IN | 1)
-		#define F1_OUT_EPADDR         (ENDPOINT_DIR_OUT | 1)
+		#define GENERIC_IN_EPADDR         (ENDPOINT_DIR_IN | 1)
 
-		/** Size in bytes of the Generic HID reporting endpoint. */
-		#define F1_EPSIZE            64
+		/* TODO: following GenericHID examples, this should be 2, but the F1 descriptor
+ 		 * dump uses 1. Can't seem to properly read/write reports using 1.  may need
+ 		 * to tweak something in LUFA? 
+		 */
+		#define GENERIC_OUT_EPADDR         (ENDPOINT_DIR_OUT | 2)
+
+		/** Size in bytes of the endpoint. */
+		#define GENERIC_EPSIZE            64
 
 		#define DTYPE_DFUFunctional	0x21
 

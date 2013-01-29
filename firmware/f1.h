@@ -25,6 +25,7 @@
  * 	Size 8, Count 80 -> 7-seg displays, function keys, rgb pads, stop keys
  */
 struct {
+	uint8_t reportID;
 	uint8_t rightDigit[8];		/* Each byte in the array corresponds to segment: DP, G, C, B, A, F, E, D */
 	uint8_t leftDigit[8];		/* Value = SEGMENT_ON or SEGMENT_OFF */ 
 	uint8_t browse;			/* Illuminated button state : BUTTON_LED_ON or BUTTON_LED_OFF */ 
@@ -70,6 +71,7 @@ struct {
  */
 struct
 {
+	uint8_t reportID;
 	uint16_t pad_state;		/* TODO: define macros to mask pads/keys */
 	uint16_t key_state;		/* TODO: define macros to mask pads/keys */
 	uint8_t  knob_value;		/* values: 0 - 0xFF */ 

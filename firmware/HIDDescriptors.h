@@ -251,6 +251,7 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM F1Report[] =
 	0xC0,
 
 	/* begin femulator output report */
+/*
 	0x09, 0xAB,
 	0xA1, 0x02,
 	0x85, 0xAB,
@@ -316,6 +317,7 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM F1Report[] =
 	0x95, 0x04,
 	0x91, 0x02,
 	0xC0,
+*/
 	/* end femulator output report */
 
 	0xC0

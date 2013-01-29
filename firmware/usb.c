@@ -6,6 +6,14 @@
  */
 
 /*
+             LUFA Library
+     Copyright (C) Dean Camera, 2013.
+
+  dean [at] fourwalledcubicle [dot] com
+           www.lufa-lib.org
+*/
+
+/*
   Copyright 2013  Dean Camera (dean [at] fourwalledcubicle [dot] com)
 
   Permission to use, copy, modify, distribute, and sell this
@@ -29,41 +37,15 @@
 
 /** \file
  *
- *  Main source file for the GenericHID demo. This file contains the main tasks of
- *  the demo and is responsible for the initial application hardware configuration.
+ *  Main source file for the GenericHID demo. This file contains the main tasks of the demo and
+ *  is responsible for the initial application hardware configuration.
  */
 
 #include "usb.h"
 #include "f1.h"
 
-/*
- * When true, the HID Input report will be sent at the next Endpoint interrupt
- */
-bool b_inputUpdated = false;
-
-/** LUFA HID Class driver interface configuration and state information. This structure is
- *  passed to all HID Class driver functions, so that multiple instances of the same class
- *  within a device can be differentiated from one another.
- */
-USB_ClassInfo_HID_Device_t Generic_HID_Interface =
-	{
-		.Config =
-			{
-				.InterfaceNumber              = 0,
-				.ReportINEndpoint             =
-					{
-						.Address              = F1_IN_EPADDR,
-						.Size                 = F1_EPSIZE,
-						.Banks                = 1,
-					},
-				.PrevReportINBuffer           = NULL, 
-				.PrevReportINBufferSize       = F1_EPSIZE, 
-			},
-	};
-
-
-/** Main program entry point. This routine contains the overall program flow, including initial
- *  setup of all components and the main program loop.
+/** Main program entry point. This routine configures the hardware required by the application, then
+ *  enters a loop to run the application tasks in sequence.
  */
 int main(void)
 {
@@ -74,10 +56,9 @@ int main(void)
 
 	for (;;)
 	{
-		HID_Device_USBTask(&Generic_HID_Interface);
+		HID_Task();
 		USB_USBTask();
 	}
-
 }
 
 /** Configures the board hardware and chip peripherals for the demo's functionality. */
@@ -88,125 +69,176 @@ void SetupHardware(void)
 	wdt_disable();
 
 	/* Disable clock division */
-	/* clock_prescale_set(clock_div_1); */
+	//clock_prescale_set(clock_div_1);
 
 	/* Hardware Initialization */
 	LEDs_Init();
 	USB_Init();
 }
 
-/** Event handler for the library USB Connection event. */
+/** Event handler for the USB_Connect event. This indicates that the device is enumerating via the status LEDs and
+ *  starts the library USB task to begin the enumeration and USB management process.
+ */
 void EVENT_USB_Device_Connect(void)
 {
+	/* Indicate USB enumerating */
 	LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
 }
 
-/** Event handler for the library USB Disconnection event. */
+/** Event handler for the USB_Disconnect event. This indicates that the device is no longer connected to a host via
+ *  the status LEDs and stops the USB management task.
+ */
 void EVENT_USB_Device_Disconnect(void)
 {
+	/* Indicate USB not ready */
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 }
 
-/** Event handler for the library USB Configuration Changed event. */
+/** Event handler for the USB_ConfigurationChanged event. This is fired when the host sets the current configuration
+ *  of the USB device after enumeration, and configures the generic HID device endpoints.
+ */
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
 	bool ConfigSuccess = true;
 
-	ConfigSuccess &= HID_Device_ConfigureEndpoints(&Generic_HID_Interface);
+	/* Setup HID Report Endpoints */
+	ConfigSuccess &= Endpoint_ConfigureEndpoint(GENERIC_IN_EPADDR, EP_TYPE_INTERRUPT, GENERIC_EPSIZE, 1);
+	ConfigSuccess &= Endpoint_ConfigureEndpoint(GENERIC_OUT_EPADDR, EP_TYPE_INTERRUPT, GENERIC_EPSIZE, 1);
 
-	USB_Device_EnableSOFEvents();
-
+	/* Indicate endpoint configuration success or failure */
 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
 }
 
-/** Event handler for the library USB Control Request reception event. */
+/** Event handler for the USB_ControlRequest event. This is used to catch and process control requests sent to
+ *  the device from the USB host before passing along unhandled control requests to the library for processing
+ *  internally.
+ */
 void EVENT_USB_Device_ControlRequest(void)
 {
-	HID_Device_ProcessControlRequest(&Generic_HID_Interface);
+	/* Handle HID Class specific requests */
+	switch (USB_ControlRequest.bRequest)
+	{
+		case HID_REQ_GetReport:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
+			{
+				uint8_t GenericData[INPUT_REPORT_SIZE];
+				CreateGenericHIDReport(GenericData);
+
+				Endpoint_ClearSETUP();
+
+				/* Write the report data to the control endpoint */
+				Endpoint_Write_Control_Stream_LE(&GenericData, sizeof(GenericData));
+				Endpoint_ClearOUT();
+			}
+
+			break;
+		case HID_REQ_SetReport:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
+			{
+				uint8_t GenericData[OUTPUT_REPORT_SIZE];
+
+				Endpoint_ClearSETUP();
+
+				/* Read the report data from the control endpoint */
+				Endpoint_Read_Control_Stream_LE(&GenericData, sizeof(GenericData));
+				Endpoint_ClearIN();
+
+				ProcessGenericHIDReport(GenericData);
+			}
+
+			break;
+	}
 }
 
-/** Event handler for the USB device Start Of Frame event. */
-void EVENT_USB_Device_StartOfFrame(void)
-{
-	HID_Device_MillisecondElapsed(&Generic_HID_Interface);
-}
-
-/** HID class driver callback function for the creation of HID reports to the host.
+/** Function to process the last received report from the host.
  *
- *  \param[in]     HIDInterfaceInfo  Pointer to the HID class interface configuration structure being referenced
- *  \param[in,out] ReportID    Report ID requested by the host if non-zero, otherwise callback should set to the generated report ID
- *  \param[in]     ReportType  Type of the report to create, either HID_REPORT_ITEM_In or HID_REPORT_ITEM_Feature
- *  \param[out]    ReportData  Pointer to a buffer where the created report should be stored
- *  \param[out]    ReportSize  Number of bytes written in the report (or zero if no report is to be sent)
- *
- *  \return Boolean true to force the sending of the report, false to let the library determine if it needs to be sent
+ *  \param[in] DataArray  Pointer to a buffer where the last received report has been stored
  */
-bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
-                                         uint8_t* const ReportID,
-                                         const uint8_t ReportType,
-                                         void* ReportData,
-                                         uint16_t* const ReportSize)
+void ProcessGenericHIDReport(uint8_t* DataArray)
 {
-
-	/* 
- 	 * TODO: currently this only sends data back to Traktor.
- 	 * How can this also send F1OutputData back to Software/MIDI?
-	 */
-	*ReportID = F1_INPUT_REPORT_ID; 
-	memcpy(ReportData, &F1InputData, sizeof(F1InputData));
-	*ReportSize = sizeof(F1InputData);
-
 	/*
-	 * Device-initiated input reports are only sent when true.  By
-	 * managing b_inputUpdated, the device will only issue Input reports
-	 * when the control state has changed.
-	 */
-	if (b_inputUpdated) {
-		b_inputUpdated = false;
-		return true;
-	}
-	return false; 
+		This is where you need to process reports sent from the host to the device. This
+		function is called each time the host has sent a new report. DataArray is an array
+		holding the report sent from the host.
+	*/
 
+	uint8_t NewLEDMask = LEDS_NO_LEDS;
 
+	if (DataArray[0])
+	  NewLEDMask |= LEDS_LED1;
+
+	if (DataArray[1])
+	  NewLEDMask |= LEDS_LED2;
+
+	if (DataArray[2])
+	  NewLEDMask |= LEDS_LED3;
+
+	if (DataArray[3])
+	  NewLEDMask |= LEDS_LED4;
+
+	LEDs_SetAllLEDs(NewLEDMask);
 }
 
-/** HID class driver callback function for the processing of HID reports from the host.
+/** Function to create the next report to send back to the host at the next reporting interval.
  *
- *  \param[in] HIDInterfaceInfo  Pointer to the HID class interface configuration structure being referenced
- *  \param[in] ReportID    Report ID of the received report from the host
- *  \param[in] ReportType  The type of report that the host has sent, either HID_REPORT_ITEM_Out or HID_REPORT_ITEM_Feature
- *  \param[in] ReportData  Pointer to a buffer where the received report has been stored
- *  \param[in] ReportSize  Size in bytes of the received HID report
+ *  \param[out] DataArray  Pointer to a buffer where the next report data should be stored
  */
-void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
-                                          const uint8_t ReportID,
-                                          const uint8_t ReportType,
-                                          const void* ReportData,
-                                          const uint16_t ReportSize)
+void CreateGenericHIDReport(uint8_t* DataArray)
 {
-	switch(ReportID) {
-		case FEMULATOR_OUTPUT_REPORT_ID: 
-			/* receive input data from software/MIDI device */
-			/* TODO: confirm that LUFA will automatically send F1InputData
-			 * to Traktor at the next interrupt interval 
-			 */
-			//memcpy(&F1InputData, ReportData, ReportSize);
-			//b_inputUpdated = true;
-			break;
-		case F1_OUTPUT_REPORT_ID:
-			/* receive data from Traktor */
-			/* TODO: pass the data to Software/MIDI */ 
-			memcpy(&F1OutputData, ReportData, ReportSize);
-			break; 
-		case F1_DFU_REPORT_ID1:
-		case F1_DFU_REPORT_ID2:
-		case F1_DFU_REPORT_ID3:
-			/* DFU is used to update the firmware on the F1.
- 			 * Femulator shouldn't support this, unless DFU is used
-			 * for other functions.
-			 */ 
-			break;
+	/*
+		This is where you need to create reports to be sent to the host from the device. This
+		function is called each time the host is ready to accept a new report. DataArray is
+		an array to hold the report to the host.
+	*/
+	F1InputData.reportID = 1;
+	memcpy(DataArray, &F1InputData, sizeof(F1InputData));
+}
+
+void HID_Task(void)
+{
+	/* Device must be connected and configured for the task to run */
+	if (USB_DeviceState != DEVICE_STATE_Configured)
+	  return;
+
+	Endpoint_SelectEndpoint(GENERIC_OUT_EPADDR);
+
+	/* Check to see if a packet has been sent from the host */
+	if (Endpoint_IsOUTReceived())
+	{
+		/* Check to see if the packet contains data */
+		if (Endpoint_IsReadWriteAllowed())
+		{
+			/* Create a temporary buffer to hold the read in report from the host */
+			uint8_t GenericData[OUTPUT_REPORT_SIZE];
+
+			/* Read Generic Report Data */
+			Endpoint_Read_Stream_LE(&GenericData, sizeof(GenericData), NULL);
+
+			/* Process Generic Report Data */
+			ProcessGenericHIDReport(GenericData);
+		}
+
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearOUT();
 	}
 
+	Endpoint_SelectEndpoint(GENERIC_IN_EPADDR);
+
+	/* Check to see if the host is ready to accept another packet */
+	if (Endpoint_IsINReady())
+	{
+		/* Create a temporary buffer to hold the report to send to the host */
+		uint8_t GenericData[INPUT_REPORT_SIZE];
+
+		/* Create Generic Report Data */
+		CreateGenericHIDReport(GenericData);
+
+		/* Write Generic Report Data */
+		Endpoint_Write_Stream_LE(&GenericData, sizeof(GenericData), NULL);
+
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearIN();
+	}
 }
+
 
