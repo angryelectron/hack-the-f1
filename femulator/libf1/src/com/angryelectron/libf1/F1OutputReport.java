@@ -8,17 +8,19 @@ package com.angryelectron.libf1;
 
 import java.nio.ByteBuffer;
 
-class F1Data {
+class F1OutputReport {
     
     /**
      * A buffer to hold HID reports
      */
-    private ByteBuffer outputReport = ByteBuffer.allocate(22);
+    private ByteBuffer outputReport;
+    private static final int REPORT_SIZE = 22;
+    private static final byte REPORT_ID = 3;
     
     /**
      * Zero-based index of fields within the output report buffer.
      */
-    protected static final int OUTPUT = 0;
+    protected static final int HEADER = 0;
     protected static final int PAD = 1;
     protected static final int KEY = 3;
     protected static final int KNOB = 5;
@@ -42,6 +44,14 @@ class F1Data {
     protected static final int KILL2_KEY = 14;
     protected static final int KILL1_KEY = 15;
     
+    protected F1OutputReport() {
+        outputReport = ByteBuffer.allocate(REPORT_SIZE);
+        outputReport.put(HEADER, REPORT_ID);
+    }
+    
+    protected byte[] getBytes() {
+        return outputReport.array();
+    }
     
     protected short getPads() {
         return outputReport.getShort(PAD);
