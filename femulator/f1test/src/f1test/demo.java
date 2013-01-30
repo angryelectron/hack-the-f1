@@ -20,6 +20,8 @@ public class demo {
         ClassPathLibraryLoader.loadNativeHIDLibrary();
     }
     // Femulator
+    //static final int VENDOR_ID = 0x03EB; //0x17cc; //0x03EB;
+    //static final int PRODUCT_ID = 0x204F; //0x1120; //0x204F;
     static final int VENDOR_ID = 0x17cc; //0x03EB;
     static final int PRODUCT_ID = 0x1120; //0x204F;
     static final String SERIAL = "FA52C4D0";
@@ -28,10 +30,10 @@ public class demo {
     /**
      * @param args input strings value.
      */
-    public static void main(String[] args) throws IOException {
-        //writeDevice();
-        listDevices();
-        readDevice();
+    public static void main(String[] args) throws IOException {        
+        //listDevices();
+        writeDevice();
+        //readDevice();
     }
 
     /**
@@ -103,7 +105,7 @@ public class demo {
             for (int i = 0; i < devs.length; i++) {
                 System.err.println("" + i + ".\t" + devs[i]);
                 System.err.println("---------------------------------------------\n");
-            }
+            }            
             System.gc();
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -115,16 +117,26 @@ public class demo {
         HIDManager manager = HIDManager.getInstance();
         HIDDevice device = manager.openById(VENDOR_ID, PRODUCT_ID, null);
         if (device == null) {
+            System.out.println("Write: OpenById returned null");
             System.exit(-1);
         }
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        buffer.put(0, (byte)3);
-        buffer.put(1, (byte)0xff);
-        buffer.put(2, (byte)0xff);
-        device.write(buffer.array());
+        
+        //allocate a buffer the same size as the Femulator output report
+        ByteBuffer buffer = ByteBuffer.allocate(22);
+        
+        //the Femulator output report ID is 0x03
+        buffer.put(0, (byte)0x03);
+        
+        //trigger pads 1-8.  In practice it doesn't make sense to do this
+        //but it makes it easier to spot the bits changing in Usblyzer
+        buffer.put(1, (byte)0xff);    
+                      
+        System.out.println("Starting write test");
+        device.write(buffer.array());                
+        System.out.println("Write test done");
+        
         
         device.close();
-        manager.release();
-        
+        manager.release();                
     }
 }
