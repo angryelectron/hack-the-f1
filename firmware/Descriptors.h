@@ -65,9 +65,13 @@
 	/* Macros: */
 		#define GENERIC_IN_EPADDR         (ENDPOINT_DIR_IN | 1)
 
-		/* TODO: following GenericHID examples, this should be 2, but the F1 descriptor
- 		 * dump uses 1. Can't seem to properly read/write reports using 1.  may need
- 		 * to tweak something in LUFA? 
+		/* 
+ 		 * The Controller Descriptor Dump says the OUT Endpoint Address is 1, 
+		 * which is the same as in IN Endpoint Address.  When configured this way,
+		 * the USB Hub constantly resets and hidapi cannot write output reports.
+		 * Let's use 2 for now, but this might cause some issues later
+		 * getting output from Traktor.  Currently, Traktor seems to be communicating
+		 * successfully. 
 		 */
 		#define GENERIC_OUT_EPADDR         (ENDPOINT_DIR_OUT | 2)
 
