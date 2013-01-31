@@ -3,9 +3,12 @@ package f1test;
 import com.codeminders.hidapi.ClassPathLibraryLoader;
 import com.codeminders.hidapi.HIDDevice;
 import com.codeminders.hidapi.HIDDeviceInfo;
+import com.codeminders.hidapi.HIDDeviceNotFoundException;
 import com.codeminders.hidapi.HIDManager;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class demonstrates enumeration, reading and getting notifications when a
@@ -15,25 +18,37 @@ public class demo {
 
     private static final long READ_UPDATE_DELAY_MS = 50L;
 
-    static {
-        //System.loadLibrary("hidapi-jni");
+    static {    
         ClassPathLibraryLoader.loadNativeHIDLibrary();
     }
-    // Femulator
-    //static final int VENDOR_ID = 0x03EB; //0x17cc; //0x03EB;
-    //static final int PRODUCT_ID = 0x204F; //0x1120; //0x204F;
+    
+    /*
+     * Femulator Specific    
+     */
     static final int VENDOR_ID = 0x17cc; //0x03EB;
     static final int PRODUCT_ID = 0x1120; //0x204F;
-    static final String SERIAL = "FA52C4D0";
+    static final String SERIAL = "FA52C4D0";    
     private static final int BUFSIZE = 64;
 
     /**
      * @param args input strings value.
      */
     public static void main(String[] args) throws IOException {        
-        listDevices();
+        /*
+         *  Enable this to test device enumeration
+         */
+        //listDevices();
+        
+        /*
+         * Enable this to test writing
+         */
         writeDevice();
-        readDevice();
+        
+        /*
+         * Enable this to test reading.  Also useful for displaying F1 output 
+         * reports
+         */ 
+        //readDevice();
     }
 
     /**
@@ -94,11 +109,8 @@ public class demo {
      * Static function to find the list of all the HID devices attached to the
      * system.
      */
-    private static void listDevices() {
-        String property = System.getProperty("java.library.path");
-        System.err.println(property);
+    private static void listDevices() {        
         try {
-
             HIDManager manager = HIDManager.getInstance();
             HIDDeviceInfo[] devs = manager.listDevices();
             System.err.println("Devices:\n\n");
@@ -106,7 +118,9 @@ public class demo {
                 System.err.println("" + i + ".\t" + devs[i]);
                 System.err.println("---------------------------------------------\n");
             }            
-            System.gc();
+            System.gc();        
+        } catch (HIDDeviceNotFoundException ex) {
+            System.out.println("No HID devices found.");
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -115,11 +129,18 @@ public class demo {
 
     private static void writeDevice() throws IOException {
         HIDManager manager = HIDManager.getInstance();
-        HIDDevice device = manager.openById(VENDOR_ID, PRODUCT_ID, null);
-        if (device == null) {
-            System.out.println("Write: OpenById returned null");
+        HIDDevice device = null;
+        try {
+            device = manager.openById(VENDOR_ID, PRODUCT_ID, null);            
+        } catch (HIDDeviceNotFoundException | NullPointerException ex) {
+            System.out.println("HID device with VID=" +VENDOR_ID + " and PID="+ PRODUCT_ID + " not found.");
             System.exit(-1);
         }
+        if (device == null) {
+                System.out.println("Can't connect to device. Check device and/or VID and PID");
+                System.exit(-1);
+        }
+        
         
         //allocate a buffer the same size as the Femulator output report
         ByteBuffer buffer = ByteBuffer.allocate(22);
@@ -127,15 +148,21 @@ public class demo {
         //the Femulator output report ID is 0x03
         buffer.put(0, (byte)0x03);
         
-        //trigger pads 1-8.  In practice it doesn't make sense to do this
-        //but it makes it easier to spot the bits changing in Usblyzer
-        buffer.put(1, (byte)0xff);    
-                      
-        System.out.println("Starting write test");
-        device.write(buffer.array());                
-        System.out.println("Write test done");
-        
-        
+        /*
+         * Fire clips 1-4
+         */
+        System.out.println("Starting clips 1-4");
+        buffer.put(1, (byte)0xF0);                                  
+        device.write(buffer.array());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            //ignore
+        }
+        System.out.println("Starting clips 13-16 (stop, if empty)");
+        buffer.put(1, (byte)0x0F);
+        device.write(buffer.array());
+                
         device.close();
         manager.release();                
     }
