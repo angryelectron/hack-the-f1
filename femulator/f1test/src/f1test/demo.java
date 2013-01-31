@@ -31,9 +31,9 @@ public class demo {
      * @param args input strings value.
      */
     public static void main(String[] args) throws IOException {        
-        //listDevices();
+        listDevices();
         writeDevice();
-        //readDevice();
+        readDevice();
     }
 
     /**

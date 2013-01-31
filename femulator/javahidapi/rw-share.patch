@@ -1,0 +1,14 @@
+diff -r 6acc5c2c72bb windows/hid.c
+--- a/windows/hid.c     Mon Dec 03 19:24:22 2012 +0200
++++ b/windows/hid.c     Wed Jan 30 16:58:22 2013 -0800
+@@ -211,9 +211,7 @@
+ {
+        HANDLE handle;
+        DWORD desired_access = (enumerate)? 0: (GENERIC_WRITE | GENERIC_READ);
+-       DWORD share_mode = (enumerate)?
+-                             FILE_SHARE_READ|FILE_SHARE_WRITE:
+-                             FILE_SHARE_READ;
++       DWORD share_mode = FILE_SHARE_READ|FILE_SHARE_WRITE;
+
+        handle = CreateFileA(path,
+                desired_access,
