@@ -6,6 +6,8 @@ package com.angryelectron.libf1;
 
 import com.angryelectron.libf1.F1HID.F1;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
 import org.apache.log4j.Level;
@@ -32,9 +34,13 @@ public class F1Api {
     private F1MidiCallback playCallback = new F1MidiCallback() {
         @Override
         public void onMidi(MidiMessage mm) {
-            F1 control = mapper.getControl(mm);
-            int value = mapper.getValue(control, mm);
-            hid.set(control, value);
+            Set<F1> controlSet = mapper.getControl(mm);
+            Iterator<F1> iterator = controlSet.iterator();
+            while (iterator.hasNext()) {
+                F1 control = iterator.next();
+                int value = mapper.getValue(control, mm);
+                hid.set(control, value);
+            }            
             try {
                 hid.send();
             } catch (IOException ex) {

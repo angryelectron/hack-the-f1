@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import javax.sound.midi.MidiMessage;
 
 /**
@@ -23,7 +25,7 @@ public class F1Mapper {
     /**
      * HashMap to hold the MIDI/F1 mappings.
      */
-    private HashMap<byte[], F1> map = new HashMap<>();
+    private HashMap<byte[], Set<F1>> map = new HashMap<>();
     
     /**
      * The MIDI device that uses this mapping.  
@@ -43,25 +45,30 @@ public class F1Mapper {
      */
     public void setControl(MidiMessage mm, F1 control) {
         /*
-         *  Store the MIDI status byte (which holds the command and channel)
-         *  and the note byte, but not the value byte, which is variable
+         *  The MIDI status byte (which holds the command and channel),
+         *  and the note byte form the key.
          */
         byte message[] = mm.getMessage();
         byte key[] = {message[0], message[1]};
-        map.put(key, control);
+        Set<F1> controlSet;
+        if (map.containsKey(key)) {
+            controlSet = map.get(key);
+        } else {            
+            controlSet = new HashSet<>();
+        }
+        controlSet.add(control);
     }
     
     /**
-     * Get the F1 control that matches this MIDI message.  Command, channel, and note are matched.
+     * Get the F1 controls that match this MIDI message.  Command, channel, and note are matched.
      * Velocity is ignored.
      * @param mm The incoming MIDI message.
      * @return The corresponding F1 control.
      */
-    public F1 getControl(MidiMessage mm) {
+    public Set<F1> getControl(MidiMessage mm) {
         byte message[] = mm.getMessage();
-        byte key[] = {message[0], message[1]};
-        return map.get(key);
-        
+        byte key[] = {message[0], message[1]};        
+        return map.get(key);        
     }
     
     /**
