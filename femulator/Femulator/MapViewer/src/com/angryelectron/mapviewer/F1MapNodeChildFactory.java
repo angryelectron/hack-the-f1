@@ -1,10 +1,4 @@
-/**
- * F1MapEntryChildFactory
- * @author ZIPTREK\abythell
- * (C) 2012 Ziptrek Ecotours
- */ 
-
-package com.angryelectron.mapeditor;
+package com.angryelectron.mapviewer;
 
 import com.angryelectron.f1api.F1MapEntry;
 import java.util.Arrays;
@@ -12,7 +6,7 @@ import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 
-public class F1MapEntryChildFactory extends ChildFactory<F1MapEntry> {
+public class F1MapNodeChildFactory extends ChildFactory<F1MapEntry> {
 
     @Override
     protected boolean createKeys(List<F1MapEntry> toPopulate) {
@@ -27,7 +21,7 @@ public class F1MapEntryChildFactory extends ChildFactory<F1MapEntry> {
     
     @Override
     protected Node createNodeForKey(F1MapEntry key) {
-        return new F1MapEntryNode(key);
+        return new F1MapNode(key);
     }
 
     

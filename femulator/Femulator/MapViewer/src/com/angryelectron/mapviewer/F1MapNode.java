@@ -1,10 +1,4 @@
-/**
- * F1MapEntryNode
- * @author ZIPTREK\abythell
- * (C) 2012 Ziptrek Ecotours
- */ 
-
-package com.angryelectron.mapeditor;
+package com.angryelectron.mapviewer;
 
 import com.angryelectron.f1api.F1MapEntry;
 import com.angryelectron.f1api.F1MapEntry.F1Control;
@@ -23,16 +17,16 @@ import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 import org.openide.util.lookup.Lookups;
 
-public class F1MapEntryNode extends AbstractNode implements PropertyChangeListener {
+public class F1MapNode extends AbstractNode implements PropertyChangeListener {
 
-    public F1MapEntryNode(F1MapEntry obj) {
-        super(Children.create(new F1MapEntryChildFactory(), true), Lookups.singleton(obj));
+    public F1MapNode(F1MapEntry obj) {
+        super(Children.create(new F1MapNodeChildFactory(), true), Lookups.singleton(obj));
         obj.addPropertyChangeListener(WeakListeners.propertyChange(this, obj));
         setDisplayName(obj.getName());
     }
     
-    public F1MapEntryNode() {
-        super(Children.create(new F1MapEntryChildFactory(), true));
+    public F1MapNode() {
+        super(Children.create(new F1MapNodeChildFactory(), true));
         setDisplayName("Root (Change to something else)");
     }
 
@@ -60,7 +54,7 @@ public class F1MapEntryNode extends AbstractNode implements PropertyChangeListen
             set.put(noteProperty);
             set.put(controlProperty);
         } catch (NoSuchMethodException ex) {
-            Logger.getLogger(F1MapEntryNode.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(F1MapNode.class.getName()).log(Level.SEVERE, null, ex);
         }
         sheet.put(set);
         return sheet;

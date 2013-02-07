@@ -4,17 +4,14 @@
  */
 package com.angryelectron.mapviewer;
 
-import com.angryelectron.f1api.F1MapEntry;
-import java.util.Collection;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.windows.TopComponent;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
+import org.openide.explorer.view.ListView;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
+import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
@@ -37,14 +34,16 @@ preferredID = "MapViewerTopComponent")
     "CTL_MapViewerTopComponent=MapViewer Window",
     "HINT_MapViewerTopComponent=This is a MapViewer window"
 })
-public final class MapViewerTopComponent extends TopComponent implements LookupListener {
+public final class MapViewerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
-    private Lookup.Result<F1MapEntry> result = null;
+    private ExplorerManager mgr = new ExplorerManager();
     
     public MapViewerTopComponent() {
         initComponents();
         setName(Bundle.CTL_MapViewerTopComponent());
         setToolTipText(Bundle.HINT_MapViewerTopComponent());
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));        
+        mgr.setRootContext(new F1MapNode());   
 
     }
 
@@ -56,49 +55,31 @@ public final class MapViewerTopComponent extends TopComponent implements LookupL
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(MapViewerTopComponent.class, "MapViewerTopComponent.jLabel1.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(MapViewerTopComponent.class, "MapViewerTopComponent.jLabel2.text")); // NOI18N
+        jScrollPane1 = new ListView();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addContainerGap(254, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(246, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        result = Utilities.actionsGlobalContext().lookupResult(F1MapEntry.class);
-        result.addLookupListener(this);
+        
     }
 
     @Override
     public void componentClosed() {
-        result.removeLookupListener(this);
-        result = null;
+        
     }
 
     void writeProperties(java.util.Properties p) {
@@ -114,13 +95,7 @@ public final class MapViewerTopComponent extends TopComponent implements LookupL
     }
 
     @Override
-    public void resultChanged(LookupEvent ev) {
-        Collection<? extends F1MapEntry> allMaps = result.allInstances();
-        if (!allMaps.isEmpty()) {
-            F1MapEntry entry = allMaps.iterator().next();
-            jLabel1.setText(entry.getName());            
-        } else {
-            jLabel1.setText("[no selection]");
-        }
+    public ExplorerManager getExplorerManager() {
+        return mgr;
     }
 }
