@@ -1,5 +1,0 @@
-These are Arduino Sketches that assist in development and debugging.  To use,
-first re-flash the ATMEGA8U2 with the stock Arduino DFU and Serial firmware.
-Then open the Arduino IDE and change the Sketchbook location (in Preferences)
-to this directory.  Restart the IDE, then choose and upload sketches.  Finally, 
-re-flash the ATMEGA8U2 with the femulator firmware.

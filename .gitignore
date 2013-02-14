@@ -4,3 +4,7 @@
 *.war
 *.ear
 /firmware/LUFA
+/Femulator/build/
+/Femulator/MapEditor/build/
+/Femulator/MapViewer/build/
+/Femulator/F1Api/build/
