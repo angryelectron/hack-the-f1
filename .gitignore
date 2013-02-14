@@ -3,18 +3,4 @@
 # Package Files #
 *.war
 *.ear
-/femulator/libf1/nbproject/private/
-/femulator/libf1/build/
-/femulator/libf1/dist/
-/femulator/f1test/nbproject/private/
-/femulator/f1test/build/
-/femulator/f1test/dist/
 /firmware/LUFA
-/femulator/libf1mapper/nbproject/private/
-/femulator/Femulator/nbproject/private/
-/femulator/Femulator/build/
-/femulator/Femulator/Mapper/build/
-/femulator/Femulator/Mapper/nbproject/private/
-/femulator/Femulator/F1Api/build/
-/femulator/Femulator/MapEditor/build/
-/femulator/Femulator/MapViewer/build/
