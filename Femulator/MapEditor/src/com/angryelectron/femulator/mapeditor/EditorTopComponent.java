@@ -22,15 +22,20 @@
  */
 package com.angryelectron.femulator.mapeditor;
 
+import com.angryelectron.femulator.f1api.F1Service;
+import com.angryelectron.femulator.f1api.F1Utils;
 import com.angryelectron.libf1.F1Entry;
 import com.angryelectron.libf1.F1Entry.Direction;
-import com.angryelectron.femulator.f1api.F1Utils;
+import com.angryelectron.libf1.F1LearnMode;
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -59,10 +64,11 @@ preferredID = "EditorTopComponent")
     "CTL_EditorTopComponent=Editor Window",
     "HINT_EditorTopComponent=This is a Editor window"
 })
-public final class EditorTopComponent extends TopComponent implements LookupListener {
+public final class EditorTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
     private Result<F1Entry> result = null;
     private F1Entry currentEntry = null;
+    private F1LearnMode learnMode = new F1LearnMode();
     
     public EditorTopComponent() {
         initComponents();        
@@ -155,6 +161,11 @@ public final class EditorTopComponent extends TopComponent implements LookupList
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(learnButton, org.openide.util.NbBundle.getMessage(EditorTopComponent.class, "EditorTopComponent.learnButton.text")); // NOI18N
+        learnButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                learnButtonActionPerformed(evt);
+            }
+        });
 
         org.openide.awt.Mnemonics.setLocalizedText(saveButton, org.openide.util.NbBundle.getMessage(EditorTopComponent.class, "EditorTopComponent.saveButton.text")); // NOI18N
         saveButton.setEnabled(false);
@@ -283,6 +294,22 @@ public final class EditorTopComponent extends TopComponent implements LookupList
         }
     }//GEN-LAST:event_directionComboBoxItemStateChanged
 
+    private void learnButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_learnButtonActionPerformed
+        F1Service f1 = F1Utils.getF1Service();
+        try {
+            learnButton.setEnabled(false);            
+            learnMode.addMidiListener(this);
+            /*
+             * TODO: does this run on a separate thread, or does it block?
+             * perhaps a dialog should prompt for a button press and give
+             * the user the option to cancel...
+             */
+            learnMode.start(f1.getDevice().getDeviceName());                        
+        } catch (Exception ex) {
+            StatusDisplayer.getDefault().setStatusText(ex.getMessage());
+        }
+    }//GEN-LAST:event_learnButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField channelTextField;
     private javax.swing.JComboBox commandComboBox;
@@ -343,4 +370,20 @@ public final class EditorTopComponent extends TopComponent implements LookupList
             currentEntry = null;
         }
     }  
+
+    /**
+     * Called when in MIDI learn mode and there is a new MIDI message
+     * available.
+     * @param pce 
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent pce) {
+        learnMode.stop();
+        learnButton.setEnabled(true);
+        learnMode.removeMidiListener(this);
+        F1Entry entry = learnMode.getF1Entry();        
+        this.commandComboBox.setSelectedItem(entry.getMidiCommandName());
+        this.channelTextField.setText(entry.getChannel().toString());
+        this.noteTextField.setText(entry.getNote().toString());                            
+    }
 }
