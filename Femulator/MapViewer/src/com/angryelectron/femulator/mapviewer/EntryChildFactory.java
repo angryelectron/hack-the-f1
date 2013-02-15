@@ -74,7 +74,9 @@ class EntryChildFactory extends ChildFactory<F1Entry> {
         /*
          * Create keys/nodes for all entries in the current group.
          */
-        toPopulate.addAll(group.listEntries());
+        if (group.listEntries() != null) {
+            toPopulate.addAll(group.listEntries());
+        }
         return true;
     }
 
