@@ -7,6 +7,14 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
+                    <code-name-base>com.angryelectron.log4j</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.openide.awt</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -43,10 +51,6 @@
                 <package>com.angryelectron.femulator.f1api</package>
                 <package>com.angryelectron.libf1</package>
             </public-packages>
-            <class-path-extension>
-                <runtime-relative-path>ext/log4j-1.2.16.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/log4j-1.2.16.jar</binary-origin>
-            </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/xstream-1.4.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/xstream-1.4.4.jar</binary-origin>

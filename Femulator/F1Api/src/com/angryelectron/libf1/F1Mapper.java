@@ -31,6 +31,7 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -41,7 +42,7 @@ import javax.sound.midi.MidiMessage;
  */
 public class F1Mapper {    
         
-    private Multimap<MidiMessage, F1> midiMap = HashMultimap.create();
+    private Multimap<Integer, F1> midiMap = HashMultimap.create();
     private Multimap<F1, MidiMessage> f1Map = HashMultimap.create();
     
     /**
@@ -75,7 +76,7 @@ public class F1Mapper {
             for (F1Entry entry : group.listEntries()) {
                 switch(entry.getDirection()) {
                     case MIDI_F1:
-                        midiMap.put(entry.getMidiMessage(), entry.getControl());
+                        midiMap.put(makeKey(entry.getMidiMessage()), entry.getControl());
                         break;
                     case F1_MIDI:
                         f1Map.put(entry.getControl(), entry.getMidiMessage());
@@ -91,7 +92,7 @@ public class F1Mapper {
      * @return A collection of F1 controls.
      */
     public Collection<F1> lookupF1(MidiMessage mm) {
-        return midiMap.get(mm);        
+        return midiMap.get(makeKey(mm));        
     }
     
     /**
@@ -126,6 +127,18 @@ public class F1Mapper {
         FileOutputStream fs = new FileOutputStream(file);          
         XStream xstream = getXStream();
         xstream.toXML(device, fs);
+    }
+    
+    /**
+     * Use the Control, Channel, and Note fields of a MIDI message to create
+     * a hash code that can be used as a key in maps.
+     * @param mm
+     * @return Hash code representing the Midi Message.
+     */
+    private int makeKey(MidiMessage mm) {
+        byte[] b = mm.getMessage();
+        b[2] = 0;
+        return Arrays.hashCode(b);
     }
     
     

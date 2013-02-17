@@ -20,11 +20,12 @@ package com.angryelectron.femulator.f1api;
 
 import com.angryelectron.libf1.F1Device;
 import com.angryelectron.libf1.F1Mapper;
+import com.angryelectron.libf1.F1PlayMode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
@@ -50,6 +51,7 @@ public class F1Provider implements F1Service, Lookup.Provider {
     private Lookup lookup;
     private F1Device device = new F1Device("[no device]");
     private File mapFile;
+    private F1PlayMode playMode;
            
     /**
      * Constructor.  Initializes the Lookup Provider.
@@ -116,7 +118,7 @@ public class F1Provider implements F1Service, Lookup.Provider {
         try {
             F1Mapper.saveMapFile(device, mapFile);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(F1Provider.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(F1Provider.class.getName()).log(Level.WARN, ex);
             StatusDisplayer.getDefault().setStatusText(ex.getMessage());
         }
     }             
@@ -129,6 +131,22 @@ public class F1Provider implements F1Service, Lookup.Provider {
     @Override
     public File getMapFile() {
         return mapFile;
+    }
+    
+    @Override
+    public void play() {
+        playMode = new F1PlayMode(device);
+        try {
+            playMode.start();
+        } catch (Exception ex) {
+            StatusDisplayer.getDefault().setStatusText(ex.getMessage());
+            Logger.getLogger(F1Provider.class.getName()).log(Level.WARN, ex);
+        } 
+    }
+    
+    @Override
+    public void stop() {
+        playMode.stop();
     }
             
 }

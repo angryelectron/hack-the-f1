@@ -47,7 +47,7 @@ public class F1PlayMode {
             ShortMessage sm = new ShortMessage();
             try {
                 sm.setMessage(mm.getStatus(), midi[1], 0);
-                Collection<F1> lookupF1 = mapper.lookupF1(mm);
+                Collection<F1> lookupF1 = mapper.lookupF1(sm);
                 for (F1 f1 : lookupF1) {
                     hid.set(f1, midi[2]);
                 }
@@ -59,12 +59,12 @@ public class F1PlayMode {
         
     };
     
-    public void F1PlayMode(File mapFile) {
+    public F1PlayMode(File mapFile) {
         device = F1Mapper.loadMapFile(mapFile);
         midi = new F1Midi(midiCallback);
     }
     
-    public void F1PlayMode(F1Device device) {
+    public F1PlayMode(F1Device device) {
         this.device = device;
         midi = new F1Midi(midiCallback);
     }

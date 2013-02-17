@@ -33,5 +33,7 @@ public interface F1Service {
     public void save();                            
     public Lookup getLookup();
     public void refresh();
-    public F1Device getDevice();    
+    public F1Device getDevice(); 
+    public void play();
+    public void stop();
 }

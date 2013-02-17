@@ -34,9 +34,8 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
 /**
- * Generate F1Entry objects using actual MIDI input.  By creating a property
- * change listener in your class you can be notified whenever a new F1Entry
- * object is generated in response to MIDI input.
+ * Generate F1Entry objects using actual MIDI input.  An F1Entry object will
+ * be put on the Lookup in response to incoming MIDI messages.
  */
 public class F1LearnMode implements Lookup.Provider {                
     private F1Midi midi;
@@ -45,8 +44,7 @@ public class F1LearnMode implements Lookup.Provider {
     private F1MidiCallback midiCallback = new F1MidiCallback() {
 
         /**
-         * When MIDI is received, update the F1Entry and fire a property
-         * change.
+         * When MIDI is received, create an F1Entry and put it on the Lookup.
          */
         @Override
         public void onMidi(MidiMessage mm) {
@@ -94,6 +92,10 @@ public class F1LearnMode implements Lookup.Provider {
         midi.close();
     }
 
+    /**
+     * Return the Lookup for this object.
+     * @return Lookup
+     */
     @Override
     public Lookup getLookup() {
         return lookup;

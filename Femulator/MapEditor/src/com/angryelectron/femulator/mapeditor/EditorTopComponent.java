@@ -16,10 +16,6 @@
  * You should have received a copy of the GNU General Public License along with
  * Femulator.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.angryelectron.femulator.mapeditor;
 
 import com.angryelectron.femulator.f1api.F1LearnMode;
@@ -276,8 +272,7 @@ public final class EditorTopComponent extends TopComponent implements LookupList
             currentEntry.setControlName(control);
             currentEntry.setDirection(direction);  
             saveButton.setEnabled(false);
-        }
-        
+        }       
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void commandComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_commandComboBoxItemStateChanged
@@ -353,10 +348,8 @@ public final class EditorTopComponent extends TopComponent implements LookupList
     public void componentOpened() {
         result = WindowManager.getDefault().findTopComponent("MapTopComponent").getLookup().lookupResult(F1Entry.class);
         result.addLookupListener(this);
-
         learnResult = learnMode.getLookup().lookupResult(F1Entry.class);
         learnResult.addLookupListener(this);
-
         mainPanel.setVisible(false);
     }
 
@@ -380,6 +373,9 @@ public final class EditorTopComponent extends TopComponent implements LookupList
 
     @Override
     public void resultChanged(LookupEvent ev) {      
+        /*
+         * Display the F1Entry from the currently selected node.
+         */
         Collection<? extends F1Entry> allEntries = result.allInstances();
         if (!allEntries.isEmpty()) {
             F1Entry entry = allEntries.iterator().next();
@@ -398,6 +394,9 @@ public final class EditorTopComponent extends TopComponent implements LookupList
             currentEntry = null;
         }
         
+        /*
+         * Update the Window with incoming MIDI.
+         */
         Collection<? extends F1Entry> learnEntries = learnResult.allInstances();
         if (!learnEntries.isEmpty()) {
             saveButton.setEnabled(true);
