@@ -16,27 +16,32 @@
  * You should have received a copy of the GNU General Public License along with
  * Femulator.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.angryelectron.libf1;
+package com.angryelectron.femulator.f1api;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import com.angryelectron.libf1.F1Entry;
+import com.angryelectron.libf1.F1Midi;
+import com.angryelectron.libf1.F1MidiCallback;
 import java.io.IOException;
+import java.util.Arrays;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.openide.util.Lookup;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  * Generate F1Entry objects using actual MIDI input.  By creating a property
  * change listener in your class you can be notified whenever a new F1Entry
  * object is generated in response to MIDI input.
  */
-public class F1LearnMode {                
+public class F1LearnMode implements Lookup.Provider {                
     private F1Midi midi;
-    private volatile F1Entry entry = new F1Entry();
-    private PropertyChangeSupport propChange = new PropertyChangeSupport(this);
+    private InstanceContent content;
+    private Lookup lookup;
     private F1MidiCallback midiCallback = new F1MidiCallback() {
 
         /**
@@ -49,11 +54,12 @@ public class F1LearnMode {
                 byte[] message = mm.getMessage();
                 ShortMessage sm = new ShortMessage();
                 sm.setMessage(mm.getStatus(), message[1], message[2]);
-                F1Entry oldEntry = entry;
+                F1Entry entry = new F1Entry();
                 entry.setChannel(sm.getChannel());
                 entry.setMidiCommand(sm.getCommand());
                 entry.setNote(sm.getData1());
-                propChange.firePropertyChange("f1Entry", oldEntry, entry);
+                content.set(Arrays.asList(entry), null);
+                
             } catch (InvalidMidiDataException ex) {
                 Logger.getLogger(F1LearnMode.class.getName()).log(Level.ERROR, null, ex);
             }
@@ -64,7 +70,9 @@ public class F1LearnMode {
     /**
      * Constructor.
      */
-    public void F1LearnMode() {        
+    public F1LearnMode() {
+        content = new InstanceContent();
+        lookup = new AbstractLookup(content);
         midi = new F1Midi(midiCallback);
     }
         
@@ -85,32 +93,10 @@ public class F1LearnMode {
     public void stop() {        
         midi.close();
     }
-    
-    /**
-     * Add a property change listener that will fire whenever a new MIDI
-     * message is available.
-     * @param listener 
-     */
-    public void addMidiListener(PropertyChangeListener listener) {
-        propChange.addPropertyChangeListener(listener);
-    }
-    
-    /**
-     * Remove a property change listener.  No notification will be send when 
-     * new MIDI messages arrive.
-     * @param listener 
-     */
-    public void removeMidiListener(PropertyChangeListener listener) {
-        propChange.removePropertyChangeListener(listener);
-    }
-    
-    /**
-     * Get an F1Entry object.  Call this from within a PropertyChangeListener
-     * to obtain the latest MIDI message.
-     * @return 
-     */
-    public F1Entry getF1Entry() {
-        return entry;
+
+    @Override
+    public Lookup getLookup() {
+        return lookup;
     }
     
 }

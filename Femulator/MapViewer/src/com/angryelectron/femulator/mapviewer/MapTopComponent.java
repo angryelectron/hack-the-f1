@@ -65,6 +65,11 @@ public final class MapTopComponent extends TopComponent implements LookupListene
         initComponents();
         setName(Bundle.CTL_MapTopComponent());
         setToolTipText(Bundle.HINT_MapTopComponent());
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        
         associateLookup(ExplorerUtils.createLookup(explorerMgr, getActionMap()));          
         explorerMgr.setRootContext(new DeviceNode());
         f1 = F1Utils.getF1Service();

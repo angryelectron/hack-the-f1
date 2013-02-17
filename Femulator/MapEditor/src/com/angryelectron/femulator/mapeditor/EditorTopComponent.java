@@ -22,14 +22,12 @@
  */
 package com.angryelectron.femulator.mapeditor;
 
+import com.angryelectron.femulator.f1api.F1LearnMode;
 import com.angryelectron.femulator.f1api.F1Service;
 import com.angryelectron.femulator.f1api.F1Utils;
 import com.angryelectron.libf1.F1Entry;
 import com.angryelectron.libf1.F1Entry.Direction;
-import com.angryelectron.libf1.F1LearnMode;
 import java.awt.event.ItemEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -64,11 +62,12 @@ preferredID = "EditorTopComponent")
     "CTL_EditorTopComponent=Editor Window",
     "HINT_EditorTopComponent=This is a Editor window"
 })
-public final class EditorTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+public final class EditorTopComponent extends TopComponent implements LookupListener {
 
     private Result<F1Entry> result = null;
     private F1Entry currentEntry = null;
     private F1LearnMode learnMode = new F1LearnMode();
+    private Result<F1Entry> learnResult = null;
     
     public EditorTopComponent() {
         initComponents();        
@@ -102,6 +101,7 @@ public final class EditorTopComponent extends TopComponent implements LookupList
         directionComboBox = new javax.swing.JComboBox();
         learnButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
 
         setEnabled(false);
 
@@ -175,6 +175,14 @@ public final class EditorTopComponent extends TopComponent implements LookupList
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(cancelButton, org.openide.util.NbBundle.getMessage(EditorTopComponent.class, "EditorTopComponent.cancelButton.text")); // NOI18N
+        cancelButton.setEnabled(false);
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -197,7 +205,10 @@ public final class EditorTopComponent extends TopComponent implements LookupList
                             .addGroup(mainPanelLayout.createSequentialGroup()
                                 .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(learnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(learnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(f1ComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(noteTextField)
                             .addComponent(channelTextField)
@@ -235,8 +246,9 @@ public final class EditorTopComponent extends TopComponent implements LookupList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(learnButton)
-                    .addComponent(saveButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(saveButton)
+                    .addComponent(cancelButton))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -297,20 +309,30 @@ public final class EditorTopComponent extends TopComponent implements LookupList
     private void learnButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_learnButtonActionPerformed
         F1Service f1 = F1Utils.getF1Service();
         try {
-            learnButton.setEnabled(false);            
-            learnMode.addMidiListener(this);
             /*
              * TODO: does this run on a separate thread, or does it block?
              * perhaps a dialog should prompt for a button press and give
              * the user the option to cancel...
              */
-            learnMode.start(f1.getDevice().getDeviceName());                        
+            learnMode.start(f1.getDevice().getDeviceName());
         } catch (Exception ex) {
             StatusDisplayer.getDefault().setStatusText(ex.getMessage());
         }
+        saveButton.setEnabled(false);
+        learnButton.setEnabled(false);
+        cancelButton.setEnabled(true);
+        StatusDisplayer.getDefault().setStatusText("Press any key on the " + f1.getDevice().getDeviceName());
     }//GEN-LAST:event_learnButtonActionPerformed
 
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        saveButton.setEnabled(true);
+        cancelButton.setEnabled(false);
+        learnButton.setEnabled(true);
+        learnMode.stop();
+    }//GEN-LAST:event_cancelButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cancelButton;
     private javax.swing.JTextField channelTextField;
     private javax.swing.JComboBox commandComboBox;
     private javax.swing.JComboBox directionComboBox;
@@ -326,16 +348,22 @@ public final class EditorTopComponent extends TopComponent implements LookupList
     private javax.swing.JTextField noteTextField;
     private javax.swing.JButton saveButton;
     // End of variables declaration//GEN-END:variables
+
     @Override
-    public void componentOpened() {        
+    public void componentOpened() {
         result = WindowManager.getDefault().findTopComponent("MapTopComponent").getLookup().lookupResult(F1Entry.class);
-        result.addLookupListener(this);         
-        mainPanel.setVisible(false);             
+        result.addLookupListener(this);
+
+        learnResult = learnMode.getLookup().lookupResult(F1Entry.class);
+        learnResult.addLookupListener(this);
+
+        mainPanel.setVisible(false);
     }
 
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
+        learnResult.removeLookupListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -351,7 +379,7 @@ public final class EditorTopComponent extends TopComponent implements LookupList
     }
 
     @Override
-    public void resultChanged(LookupEvent ev) {
+    public void resultChanged(LookupEvent ev) {      
         Collection<? extends F1Entry> allEntries = result.allInstances();
         if (!allEntries.isEmpty()) {
             F1Entry entry = allEntries.iterator().next();
@@ -361,29 +389,25 @@ public final class EditorTopComponent extends TopComponent implements LookupList
             this.noteTextField.setText(entry.getNote().toString());
             this.f1ComboBox.setSelectedItem(entry.getControlName());
             this.directionComboBox.setSelectedItem(entry.getDirection());
-            this.currentEntry = entry; 
+            this.currentEntry = entry;
             mainPanel.setVisible(true);
             saveButton.setEnabled(false);
             currentEntry = entry;
         } else {
-            mainPanel.setVisible(false); 
+            mainPanel.setVisible(false);
             currentEntry = null;
         }
+        
+        Collection<? extends F1Entry> learnEntries = learnResult.allInstances();
+        if (!learnEntries.isEmpty()) {
+            saveButton.setEnabled(true);
+            cancelButton.setEnabled(false);
+            learnButton.setEnabled(true);     
+            F1Entry entry = learnEntries.iterator().next();
+            this.commandComboBox.setSelectedItem(entry.getMidiCommandName());
+            this.channelTextField.setText(entry.getChannel().toString());
+            this.noteTextField.setText(entry.getNote().toString());
+            learnMode.stop();
+        }
     }  
-
-    /**
-     * Called when in MIDI learn mode and there is a new MIDI message
-     * available.
-     * @param pce 
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent pce) {
-        learnMode.stop();
-        learnButton.setEnabled(true);
-        learnMode.removeMidiListener(this);
-        F1Entry entry = learnMode.getF1Entry();        
-        this.commandComboBox.setSelectedItem(entry.getMidiCommandName());
-        this.channelTextField.setText(entry.getChannel().toString());
-        this.noteTextField.setText(entry.getNote().toString());                            
-    }
 }
