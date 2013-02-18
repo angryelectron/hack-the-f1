@@ -23,6 +23,7 @@ import com.angryelectron.libf1.F1Midi;
 import com.angryelectron.libf1.F1MidiCallback;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
@@ -90,6 +91,10 @@ public class F1LearnMode implements Lookup.Provider {
      */
     public void stop() {        
         midi.close();
+        /*
+         * Clear contents of the Lookup
+         */
+        content.set(Collections.emptyList(), null);
     }
 
     /**

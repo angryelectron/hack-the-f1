@@ -395,7 +395,7 @@ public final class EditorTopComponent extends TopComponent implements LookupList
         }
         
         /*
-         * Update the Window with incoming MIDI.
+         * TODO: fix this so contents aren't overwritten.
          */
         Collection<? extends F1Entry> learnEntries = learnResult.allInstances();
         if (!learnEntries.isEmpty()) {

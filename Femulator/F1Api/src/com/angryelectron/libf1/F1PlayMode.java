@@ -43,18 +43,16 @@ public class F1PlayMode {
 
         @Override
         public void onMidi(MidiMessage mm) {
-            byte[] midi = mm.getMessage();
-            ShortMessage sm = new ShortMessage();
-            try {
-                sm.setMessage(mm.getStatus(), midi[1], 0);
-                Collection<F1> lookupF1 = mapper.lookupF1(sm);
-                for (F1 f1 : lookupF1) {
-                    hid.set(f1, midi[2]);
-                }
-                hid.send();
-            } catch (Exception ex) {              
-                Logger.getLogger(F1Midi.class.getName()).log(Level.ERROR, null, ex);
+            Collection<F1> lookupF1 = mapper.lookupF1(mm);
+            for (F1 f1 : lookupF1) {
+                hid.set(f1, mm.getMessage()[2]);
             }
+            try {
+                hid.send();
+            } catch (IOException ex) {
+                Logger.getLogger(F1PlayMode.class.getName()).log(Level.WARN, null, ex);
+            }
+
         }
         
     };

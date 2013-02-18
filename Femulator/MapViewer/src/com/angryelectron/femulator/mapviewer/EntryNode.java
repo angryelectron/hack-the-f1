@@ -21,6 +21,7 @@ package com.angryelectron.femulator.mapviewer;
 import com.angryelectron.femulator.f1api.F1Service;
 import com.angryelectron.femulator.f1api.F1Utils;
 import com.angryelectron.libf1.F1Entry;
+import com.angryelectron.libf1.F1Group;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
@@ -29,6 +30,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.Lookups;
 
@@ -73,7 +75,10 @@ public class EntryNode extends AbstractNode {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-                        
+            F1Group group = getParentNode().getLookup().lookup(F1Group.class);
+            group.removeEntry(getLookup().lookup(F1Entry.class));
+            F1Service f1 = F1Utils.getF1Service();
+            f1.refresh();
         }
     }
        
