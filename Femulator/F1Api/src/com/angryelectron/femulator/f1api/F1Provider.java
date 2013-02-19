@@ -41,8 +41,8 @@ import org.openide.util.lookup.ServiceProvider;
  * To access this class from elsewhere:
  *      F1Service f1 = Lookup.getDefault().lookup(F1Service.class);                
  * 
- * The class also has its own Lookup which is used to share F1MapEntries
- * with interested modules.
+ * The class also has its own Lookup which is used to notify UI elements when
+ * the 'device' model has changed.
  */
 @ServiceProvider(service=F1Service.class)
 public class F1Provider implements F1Service, Lookup.Provider {    
@@ -52,6 +52,7 @@ public class F1Provider implements F1Service, Lookup.Provider {
     private F1Device device = new F1Device("[no device]");
     private File mapFile;
     private F1PlayMode playMode;
+    private boolean isPlaying = false;
            
     /**
      * Constructor.  Initializes the Lookup Provider.
@@ -134,19 +135,27 @@ public class F1Provider implements F1Service, Lookup.Provider {
     }
     
     @Override
-    public void play() {
-        playMode = new F1PlayMode(device);
-        try {
-            playMode.start();
-        } catch (Exception ex) {
-            StatusDisplayer.getDefault().setStatusText(ex.getMessage());
-            Logger.getLogger(F1Provider.class.getName()).log(Level.WARN, ex);
-        } 
+    public boolean play() {
+        if (!isPlaying) {
+            playMode = new F1PlayMode(device);
+            try {
+                playMode.start();
+                isPlaying = true;
+                return true;
+            } catch (Exception ex) {
+                StatusDisplayer.getDefault().setStatusText(ex.getMessage());
+                Logger.getLogger(F1Provider.class.getName()).log(Level.WARN, ex);
+            }
+        }
+        return false;
     }
     
     @Override
     public void stop() {
-        playMode.stop();
+        if (isPlaying) {
+            playMode.stop();
+            isPlaying = false;
+        }
     }
             
 }

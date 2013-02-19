@@ -34,6 +34,6 @@ public interface F1Service {
     public Lookup getLookup();
     public void refresh();
     public F1Device getDevice(); 
-    public void play();
+    public boolean play();
     public void stop();
 }

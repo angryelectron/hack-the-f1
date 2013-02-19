@@ -40,7 +40,7 @@ import org.openide.windows.WindowManager;
 id = "com.angryelectron.femulator.mapviewer.SaveAction")
 @ActionRegistration(
     displayName = "#CTL_SaveAction")
-@ActionReference(path = "Menu/File", position = 1450)
+@ActionReference(path = "Menu/File", position = 1300)
 @Messages("CTL_SaveAction=Save")
 public final class SaveAction implements ActionListener {
 
