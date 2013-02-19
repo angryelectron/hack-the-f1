@@ -95,13 +95,9 @@ public class F1Midi implements Receiver {
 
     @Override
     public void close() {
-        if(receiver != null) { 
-            try {
-                receiver.getTransmitter().close();
-                receiver.close();
-            } catch (MidiUnavailableException ex) {
-                Logger.getLogger(F1Midi.class.getName()).log(Level.ERROR, null, ex);
-            }
+        if (receiver != null) {
+                receiver.close();  //shoud close all receivers and transmitters
+                receiver = null;
         }
     }
     
