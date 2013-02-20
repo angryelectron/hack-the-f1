@@ -3,17 +3,34 @@ Copyright 2013, Andrew Bythell <abythell@ieee.org>
 http://angryelectron.com/femulator
 
 Femulator is an application for mapping MIDI and communicating with the
-Femulator Hardware to control Traktor remix decks.  It has been built using the
-Netbeans Platform version 2.7.1. 
+Femulator Hardware to control Traktor remix decks.  For more information,
+please see http://angryelectron.com/femulator.
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+To Build
+---
+This application uses the Netbeans Platform 2.7.1 and is easly built using the
+Netbeans IDE (http://netbeans.org/downloads):
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+1. Get the source from http://github.com/angryelectron/hack-the-f1
+2. Using the Netbeans IDE, open the ./hack-the-f1/Femulator project
+3. Clean and Build 
 
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
+To build the application without the Netbeans IDE you will need Apache Ant and
+the Java 1.7 SDK:
+
+1. Get the source from http://github.com/angryelectron/hack-the-f1
+2. Change to ./hack-the-f1/Femulator
+2. Run 'ant -f configure.xml' to download and configure the Netbeans platform.
+3. Run 'ant create-platform' to create the application in ./dist. 
+
+Once the platform has been downloaded, it will also be used if this project is
+opened in the IDE.  To use the stock platform bundled with the IDE, run "ant -f
+configure.xml clean", then re-open the Femulator project in the IDE.  
+
+Here are some other useful Ant targets:
+
+* "ant run" - build and run the application
+* "ant build-zip" - build and create a zip-distribution in ./dist
+* "ant -f configure.xml" - download and configure the Netbeans platform
+* "ant -f configure.xml clean" - remove the downloaded Netbeans platform
+
