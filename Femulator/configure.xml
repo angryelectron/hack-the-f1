@@ -1,0 +1,68 @@
+<!--
+	Femulator Build-Config 
+	Copyright 2013, Andrew Bythell <abythell@ieee.org>
+	http://angryelectron.com/femulator
+
+	This Ant script is part of the Femulator project and is used to build
+	the Femulator Software from the command line on machines that do not have the
+	Netbeans IDE installed. See README for details. 
+  -->
+
+<project name="configure-platform" default="configure" basedir=".">
+
+    <!--
+	Some properties and paths
+    -->
+    <path id="basedir.path"> <pathelement path="${basedir}" /> </path>
+    <pathconvert targetos="unix" property="basedir.unix" refid="basedir.path"/>
+
+    <property name="netbeans" value="${basedir.unix}/netbeans721"/>
+    <property name="bootstrap.url" value="http://deadlock.netbeans.org/hudson/job/nbms-and-javadoc/lastStableBuild/artifact/nbbuild/netbeans/harness/tasks.jar"/>
+    <property name="netbeans.updatecenter.url" value="http://updates.netbeans.org/netbeans/updates/7.2.1/uc/final/distribution/catalog.xml.gz"/>
+
+    <!--
+	Download the Netbeans 2.7.1 platform and build harness
+    -->
+    <target name="download">
+        <mkdir dir="${netbeans}/harness"/>
+        <get 
+		src="${bootstrap.url}" 
+		dest="${netbeans}/harness/tasks.jar" 
+		usetimestamp="true" 
+		verbose="true"
+	/>
+        <taskdef name="autoupdate" 
+		classname="org.netbeans.nbbuild.AutoUpdate" 
+		classpath="${netbeans}/harness/tasks.jar"
+	/>
+        <!-- <autoupdate downloaddir="${netbeans}" updatecenter="${netbeans.updatecenter.url}"> -->
+        <autoupdate installdir="${netbeans}" updatecenter="${netbeans.updatecenter.url}">
+            <modules includes=".*" clusters="harness[0-9]*"/>
+            <modules includes=".*" clusters="platform[0-9]*"/>
+        </autoupdate>
+    </target>
+
+
+    <!-- 
+	Configure the Netbeans build harness to use the downloaded platform 
+    -->
+    <target name="configure" depends="download">
+	<mkdir dir="nbproject/private"/>
+	<echo file="nbproject/private/platform-private.properties">user.properties.file=${basedir.unix}/nbproject/private/build.properties${line.separator}</echo>
+	<echo file="nbproject/private/build.properties">nbplatform.default.harness.dir=${nbplatform.default.netbeans.dest.dir}/harness${line.separator}</echo>
+	<echo file="nbproject/private/build.properties" append="true">nbplatform.default.netbeans.dest.dir=${netbeans}${line.separator}</echo>
+    </target>
+
+    <!--
+	Remove the downloaded platform and build harness.  This allows the Netbeans IDE to set the paths
+	to the stock values.
+    -->
+    <target name="clean">
+	<delete dir="nbproject/private" />
+	<delete dir="${netbeans}" />
+	<echo>Local Netbeans Platform removed.  Start the IDE to use its built-in plaform, or "ant -f configure.xml" to
+		re-download the platform and build harness.
+	</echo>
+    </target>
+
+</project>
