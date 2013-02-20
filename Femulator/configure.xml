@@ -11,17 +11,21 @@
 <project name="configure-platform" default="configure" basedir=".">
 
     <!--
-	Some properties and paths
+	User-settings	
+    -->
+    <property name="version" value="7.2.1"/>
+
+    <!--
+	These don't need to modified
     -->
     <path id="basedir.path"> <pathelement path="${basedir}" /> </path>
     <pathconvert targetos="unix" property="basedir.unix" refid="basedir.path"/>
-
-    <property name="netbeans" value="${basedir.unix}/netbeans721"/>
+    <property name="netbeans" value="${basedir.unix}/netbeans-${version}"/>
     <property name="bootstrap.url" value="http://deadlock.netbeans.org/hudson/job/nbms-and-javadoc/lastStableBuild/artifact/nbbuild/netbeans/harness/tasks.jar"/>
-    <property name="netbeans.updatecenter.url" value="http://updates.netbeans.org/netbeans/updates/7.2.1/uc/final/distribution/catalog.xml.gz"/>
+    <property name="netbeans.updatecenter.url" value="http://updates.netbeans.org/netbeans/updates/${version}/uc/final/distribution/catalog.xml.gz"/>
 
     <!--
-	Download the Netbeans 2.7.1 platform and build harness
+	Download the Netbeans platform and build harness
     -->
     <target name="download">
         <mkdir dir="${netbeans}/harness"/>
@@ -35,7 +39,6 @@
 		classname="org.netbeans.nbbuild.AutoUpdate" 
 		classpath="${netbeans}/harness/tasks.jar"
 	/>
-        <!-- <autoupdate downloaddir="${netbeans}" updatecenter="${netbeans.updatecenter.url}"> -->
         <autoupdate installdir="${netbeans}" updatecenter="${netbeans.updatecenter.url}">
             <modules includes=".*" clusters="harness[0-9]*"/>
             <modules includes=".*" clusters="platform[0-9]*"/>
@@ -60,9 +63,6 @@
     <target name="clean">
 	<delete dir="nbproject/private" />
 	<delete dir="${netbeans}" />
-	<echo>Local Netbeans Platform removed.  Start the IDE to use its built-in plaform, or "ant -f configure.xml" to
-		re-download the platform and build harness.
-	</echo>
     </target>
 
 </project>
