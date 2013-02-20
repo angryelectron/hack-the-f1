@@ -325,7 +325,6 @@ public final class EditorTopComponent extends TopComponent implements LookupList
         learnButton.setEnabled(true);
         learnMode.stop();
     }//GEN-LAST:event_cancelButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField channelTextField;
@@ -372,13 +371,33 @@ public final class EditorTopComponent extends TopComponent implements LookupList
     }
 
     @Override
-    public void resultChanged(LookupEvent ev) {      
+    public void resultChanged(LookupEvent ev) {
+
+        /*
+         * Results can come from F1Nodes or F1LearnMode
+         */
+        Collection<? extends F1Entry> nodeEntries = result.allInstances();
+        Collection<? extends F1Entry> learnEntries = learnResult.allInstances();
+        
+        /*
+         * Check for new entries from LearnMode and update the current node
+         */
+        if (!learnEntries.isEmpty()) {
+            cancelButton.setEnabled(false);
+            learnButton.setEnabled(true);    
+            F1Entry newEntry = learnEntries.iterator().next();
+            F1Entry oldEntry = nodeEntries.iterator().next();
+            oldEntry.setChannel(newEntry.getChannel());
+            oldEntry.setNote(newEntry.getNote());
+            oldEntry.setMidiCommand(newEntry.getMidiCommand());
+            learnMode.stop();
+        }
+
         /*
          * Display the F1Entry from the currently selected node.
-         */
-        Collection<? extends F1Entry> allEntries = result.allInstances();
-        if (!allEntries.isEmpty()) {
-            F1Entry entry = allEntries.iterator().next();
+         */      
+        if (!nodeEntries.isEmpty()) {
+            F1Entry entry = nodeEntries.iterator().next();
             this.nameLabel.setText(entry.getName());
             this.commandComboBox.setSelectedItem(entry.getMidiCommandName());
             this.channelTextField.setText(entry.getChannel().toString());
@@ -393,20 +412,6 @@ public final class EditorTopComponent extends TopComponent implements LookupList
             mainPanel.setVisible(false);
             currentEntry = null;
         }
-        
-        /*
-         * TODO: fix this so contents aren't overwritten.
-         */
-        Collection<? extends F1Entry> learnEntries = learnResult.allInstances();
-        if (!learnEntries.isEmpty()) {
-            saveButton.setEnabled(true);
-            cancelButton.setEnabled(false);
-            learnButton.setEnabled(true);     
-            F1Entry entry = learnEntries.iterator().next();
-            this.commandComboBox.setSelectedItem(entry.getMidiCommandName());
-            this.channelTextField.setText(entry.getChannel().toString());
-            this.noteTextField.setText(entry.getNote().toString());
-            learnMode.stop();
-        }
+
     }  
 }

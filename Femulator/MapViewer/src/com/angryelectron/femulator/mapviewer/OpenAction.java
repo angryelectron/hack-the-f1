@@ -40,7 +40,7 @@ import org.openide.windows.WindowManager;
 id = "com.angryelectron.femulator.mapviewer.OpenAction")
 @ActionRegistration(
     displayName = "#CTL_OpenAction")
-@ActionReference(path = "Menu/File", position = 1300)
+@ActionReference(path = "Menu/File", position = 1200)
 @Messages("CTL_OpenAction=Open")
 public final class OpenAction implements ActionListener {
                

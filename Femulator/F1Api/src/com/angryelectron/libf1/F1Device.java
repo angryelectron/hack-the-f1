@@ -50,4 +50,9 @@ public class F1Device {
         return groups;        
     }
     
+    public void clear() {
+        groups.clear();
+        device = "[no device]";
+    }
+    
 }
