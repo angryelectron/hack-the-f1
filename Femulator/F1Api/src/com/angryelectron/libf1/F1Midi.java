@@ -96,8 +96,7 @@ public class F1Midi implements Receiver {
     @Override
     public void close() {
         if (receiver != null) {
-                receiver.close();  //shoud close all receivers and transmitters
-                receiver = null;
+                receiver.close();  //should close all receivers and transmitters
         }
     }
     
