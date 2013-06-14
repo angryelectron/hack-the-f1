@@ -63,7 +63,7 @@
 		} USB_Descriptor_Configuration_t;
 
 	/* Macros: */
-		#define GENERIC_IN_EPADDR         (ENDPOINT_DIR_IN | 1)
+		#define GENERIC_IN_EPADDR        0x81 
 
 		/* 
  		 * The Controller Descriptor Dump says the OUT Endpoint Address is 1, 
@@ -73,10 +73,10 @@
 		 * getting output from Traktor.  Currently, Traktor seems to be communicating
 		 * successfully. 
 		 */
-		#define GENERIC_OUT_EPADDR         (ENDPOINT_DIR_OUT | 2)
+		#define GENERIC_OUT_EPADDR        0x01 
 
 		/** Size in bytes of the endpoint. */
-		#define GENERIC_EPSIZE            64
+		#define GENERIC_EPSIZE           64 
 
 		#define DTYPE_DFUFunctional	0x21
 
