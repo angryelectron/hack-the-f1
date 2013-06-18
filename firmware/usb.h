@@ -1,11 +1,4 @@
 /*
- * Femulator Firmware - USB Device Header
- * Copyright 2013 Andrew Bythell, abythell@ieee.org
- * http://angryelectron.com/femulator
- *
- */
-
-/*
              LUFA Library
      Copyright (C) Dean Camera, 2013.
 
@@ -52,10 +45,10 @@
 		#include <string.h>
 
 		#include "Descriptors.h"
-		#include "Config/AppConfig.h"
-		
+
 		#include <LUFA/Drivers/USB/USB.h>
 		#include <LUFA/Drivers/Board/LEDs.h>
+		#include <LUFA/Platform/Platform.h>
 
 	/* Macros: */
 		/** LED mask for the library LED driver, to indicate that the USB interface is not ready. */
@@ -84,5 +77,4 @@
 		void CreateGenericHIDReport(uint8_t* DataArray);
 
 #endif
-
 
