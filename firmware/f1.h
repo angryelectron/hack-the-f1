@@ -12,7 +12,8 @@
  */
 #define F1_OUTPUT_REPORT_ID	128
 #define F1_INPUT_REPORT_ID	1
-#define FEMULATOR_OUTPUT_REPORT_ID 3
+#define FEMULATOR_OUTPUT_REPORT_ID 2
+#define FEMULATOR_INPUT_REPORT_ID 129
 
 /*
  * F1 Output Data Report, ID 128.  Based on data from
