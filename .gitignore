@@ -2,15 +2,13 @@
 
 # Package Files #
 *.war
-*.ear
+*.eak
+*.log
 /firmware/LUFA
 /Femulator/build/
 /Femulator/MapEditor/build/
 /Femulator/MapViewer/build/
 /Femulator/F1Api/build/
-/femulator/F1Api/build/
-/femulator/MapEditor/build/
-/femulator/MapViewer/build/
 /Femulator/F1Api/nbproject/private/
 /Femulator/MapEditor/nbproject/private/
 /Femulator/MapViewer/nbproject/private/
@@ -18,3 +16,6 @@
 /Femulator/Log4j/build/
 /Femulator/Log4j/nbproject/private/
 /Femulator/dist/
+/Femulator/hidtest/nbproject/private/
+/Femulator/hidtest/build/
+/Femulator/hidtest/dist/
