@@ -56,7 +56,7 @@ public class F1HID {
      * must have this value set as the first byte, which must match the Femulator
      * firmware.
      */
-    public static final byte OUTPUT_ID = 0x03;
+    public static final byte OUTPUT_ID = 0x02;
     
     /**
      * Size of the Femulator Output Report.  All reports sent to the Femulator using
