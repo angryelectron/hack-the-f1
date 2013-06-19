@@ -55,8 +55,12 @@ public final class SaveAction implements ActionListener {
         }
         switch(fc.showSaveDialog(WindowManager.getDefault().getMainWindow())) {
             case JFileChooser.APPROVE_OPTION:
-                File file = fc.getSelectedFile().getAbsoluteFile();                                
-                f1.setMapFile(file);
+                String fileName = fc.getSelectedFile().getAbsolutePath();
+                if (fileName.endsWith(".f1")) {
+                    f1.setMapFile(fc.getSelectedFile().getAbsoluteFile());
+                } else {
+                    f1.setMapFile(new File(fileName + ".f1"));
+                }                
                 f1.save();              
         }        
     }
