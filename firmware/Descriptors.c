@@ -119,6 +119,78 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM GenericReport[] =
 	    HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
 
 	  HID_RI_END_COLLECTION(0),
+	  HID_RI_USAGE(8, 0x02),
+	  HID_RI_COLLECTION(8, 0x02),
+		
+	    /* custom Femulator Output Report */
+	    HID_RI_REPORT_ID(8, 0x02),
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(8, 0x01),
+	    HID_RI_REPORT_SIZE(8, 0x01),
+	    HID_RI_REPORT_COUNT(8, 0x20),
+	    HID_RI_OUTPUT(8, 0x02), 
+
+	    HID_RI_USAGE(8, 0x03),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(16, 0x00FF),
+	    HID_RI_REPORT_SIZE(8, 0x08),
+	    HID_RI_REPORT_COUNT(8, 0x01),
+	    HID_RI_OUTPUT(8, 0x02), 
+
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(16, 0x0FFF),
+	    HID_RI_REPORT_SIZE(8, 0x10),
+	    HID_RI_REPORT_COUNT(8, 0x04),
+	    HID_RI_OUTPUT(8, 0x02),
+
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(16, 0x0FFF),
+	    HID_RI_REPORT_SIZE(8, 0x10),
+	    HID_RI_REPORT_COUNT(8, 0x04),
+	    HID_RI_OUTPUT(8, 0x02), 
+	    /* end custom output report */
+
+	  HID_RI_END_COLLECTION(0),
 	  HID_RI_USAGE(8, 0x80),
 	  HID_RI_COLLECTION(8, 0x02),
 
