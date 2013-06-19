@@ -1,0 +1,4 @@
+* disable Netbeans splash screen when starting app
+* change "Sending Midi to Femulator" button text to read "Stop"
+* bug - Femulator crashes when "learning" on 64-bit Windows
+

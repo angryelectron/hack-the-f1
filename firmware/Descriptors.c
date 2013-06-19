@@ -1,9 +1,10 @@
 /*
- * Femulator Firmware - USB Descriptors
- * Copyright 2013 Andrew Bythell, abythell@ieee.org
- * http://angryelectron.com/femulator
- *
- */
+             LUFA Library
+     Copyright (C) Dean Camera, 2013.
+
+  dean [at] fourwalledcubicle [dot] com
+           www.lufa-lib.org
+*/
 
 /*
   Copyright 2013  Dean Camera (dean [at] fourwalledcubicle [dot] com)
@@ -35,7 +36,183 @@
  */
 
 #include "Descriptors.h"
-#include "HIDDescriptors.h"
+
+/** HID class report descriptor. This is a special descriptor constructed with values from the
+ *  USBIF HID class specification to describe the reports and capabilities of the HID device. This
+ *  descriptor is parsed by the host and its contents used to determine what data (and in what encoding)
+ *  the device will send, and what it may be sent back from the host. Refer to the HID specification for
+ *  more details on HID report descriptors.
+ */
+const USB_Descriptor_HIDReport_Datatype_t PROGMEM GenericReport[] =
+{
+	HID_RI_USAGE_PAGE(16, 0xFF01),
+	HID_RI_USAGE(8, 0x00),
+	HID_RI_COLLECTION(8, 0x01),
+
+	  HID_RI_USAGE(8, 0x01),
+	  HID_RI_COLLECTION(8, 0x02),
+
+	    HID_RI_REPORT_ID(8, 0x01),
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_USAGE(8, 0x02), /* Vendor Usage 2 */
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(8, 0x01),
+	    HID_RI_REPORT_SIZE(8, 0x01),
+	    HID_RI_REPORT_COUNT(8, 0x20),
+	    HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
+
+	    HID_RI_USAGE(8, 0x03),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(16, 0x00FF),
+	    HID_RI_REPORT_SIZE(8, 0x08),
+	    HID_RI_REPORT_COUNT(8, 0x01),
+	    HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
+
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_USAGE(8, 0x04),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(16, 0x0FFF),
+	    HID_RI_REPORT_SIZE(8, 0x10),
+	    HID_RI_REPORT_COUNT(8, 0x04),
+	    HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
+
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_USAGE(8, 0x05),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(16, 0x0FFF),
+	    HID_RI_REPORT_SIZE(8, 0x10),
+	    HID_RI_REPORT_COUNT(8, 0x04),
+	    HID_RI_INPUT(8, HID_IOF_DATA | HID_IOF_VARIABLE | HID_IOF_ABSOLUTE),
+
+	  HID_RI_END_COLLECTION(0),
+	  HID_RI_USAGE(8, 0x80),
+	  HID_RI_COLLECTION(8, 0x02),
+
+	    HID_RI_REPORT_ID(8, 0x80),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_USAGE(8, 0x81),
+	    HID_RI_LOGICAL_MINIMUM(8, 0x00),
+	    HID_RI_LOGICAL_MAXIMUM(8, 0x7F),
+	    HID_RI_REPORT_SIZE(8, 0x08),
+	    HID_RI_REPORT_COUNT(8, 0x50),
+	    HID_RI_OUTPUT(8, 0x02),
+
+	  HID_RI_END_COLLECTION(0),
+
+	HID_RI_END_COLLECTION(0),
+};
 
 /** Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
  *  device characteristics, including the supported USB version, control endpoint size and the
@@ -57,8 +234,8 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 	.ProductID              = 0x1120,
 	.ReleaseNumber          = 0x0009, 
 
-	.ManufacturerStrIndex   = 0x01,
-	.ProductStrIndex        = 0x02,
+	.ManufacturerStrIndex   = 0x01, 
+	.ProductStrIndex        = 0x02, 
 	.SerialNumStrIndex      = 0x06, 
 
 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
@@ -76,12 +253,12 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
 
 			.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
-			.TotalInterfaces        = 2,
+			.TotalInterfaces        = 1,
 
 			.ConfigurationNumber    = 1,
-			.ConfigurationStrIndex  = 0x04,
+			.ConfigurationStrIndex  = 0x04, 
 
-			.ConfigAttributes       = 0x80, 
+			.ConfigAttributes       = 0x80,
 
 			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(480)
 		},
@@ -102,7 +279,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.InterfaceStrIndex      = NO_DESCRIPTOR
 		},
 
-	.HID_F1HID =
+	.HID_GenericHID =
 		{
 			.Header                 = {.Size = sizeof(USB_HID_Descriptor_HID_t), .Type = HID_DTYPE_HID},
 
@@ -110,7 +287,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.CountryCode            = 0x00,
 			.TotalReportDescriptors = 1,
 			.HIDReportType          = HID_DTYPE_Report,
-			.HIDReportLength        = sizeof(F1Report)
+			.HIDReportLength        = sizeof(GenericReport)
 		},
 
 	.HID_ReportINEndpoint =
@@ -124,43 +301,24 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 		},
 
 	.HID_ReportOUTEndpoint =
-                {
-                        .Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-                        .EndpointAddress        = GENERIC_OUT_EPADDR, 
-                        .Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-                        .EndpointSize           = GENERIC_EPSIZE,
-                        .PollingIntervalMS      = 0x04
-                },
-
-	.DFU_Interface = 
 		{
-			.Header = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
-			.InterfaceNumber = 1,
-			.AlternateSetting = 0,
-			.TotalEndpoints = 0,
-			.Class = 0xFE,
-			.SubClass = 0x01,
-			.Protocol = 0x01,
-			.InterfaceStrIndex = 0x05 
-		},
-	.DFU_Functional =
-		{
-			.Header = {.Size = sizeof(USB_Descriptor_DFU_Functional_t), .Type = DTYPE_DFUFunctional},
-			.Attributes = 0x07,	/* CanDnload, CanUpload, ManifestationTolerant */ 
-			.DetachTimeout = 0x00FA,
-			.TransferSize = 0x0040,
-			/* .DFUSpecification = VERSION_BCD(01.10) */
-		}	
+			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
 
+			.EndpointAddress        = GENERIC_OUT_EPADDR,
+			.Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+			.EndpointSize           = GENERIC_EPSIZE,
+			.PollingIntervalMS      = 0x04
+		}
 };
 
-/** 
- *  Descriptor Strings 
+/** Language descriptor structure. This descriptor, located in FLASH memory, is returned when the host requests
+ *  the string descriptor with index 0 (the first index). It is actually an array of 16-bit integers, which indicate
+ *  via the language ID table available at USB.org what languages the device supports for its string descriptors.
  */
 const USB_Descriptor_String_t PROGMEM LanguageString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(1), .Type = DTYPE_String},
-		
+
 	.UnicodeString          = {LANGUAGE_ID_ENG}
 };
 
@@ -193,8 +351,6 @@ const USB_Descriptor_String_t PROGMEM DFUString =
 	.Header = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
 	.UnicodeString = L"Traktor Kontrol F1 DFU"
 };
-
-
 
 
 /** This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -254,12 +410,12 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 			break;
 		case HID_DTYPE_HID:
-			Address = &ConfigurationDescriptor.HID_F1HID;
+			Address = &ConfigurationDescriptor.HID_GenericHID;
 			Size    = sizeof(USB_HID_Descriptor_HID_t);
 			break;
 		case HID_DTYPE_Report:
-			Address = &F1Report;
-			Size    = sizeof(F1Report);
+			Address = &GenericReport;
+			Size    = sizeof(GenericReport);
 			break;
 	}
 
