@@ -37,6 +37,8 @@
 #include "usb.h"
 #include "f1.h"
 
+static F1InputData_t f1InputReportBuffer;
+static bool f1InputUpdated = false;
 
 /** Main program entry point. This routine configures the hardware required by the application, then
  *  enters a loop to run the application tasks in sequence.
@@ -44,6 +46,7 @@
 int main(void)
 {
 	SetupHardware();
+	f1InputReportBuffer.reportID = F1_INPUT_REPORT_ID;
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 	GlobalInterruptEnable();
@@ -168,6 +171,12 @@ void ProcessGenericHIDReport(uint8_t* DataArray)
 		holding the report sent from the host.
 	*/
 
+	if (DataArray[0] == FEMULATOR_OUTPUT_REPORT_ID) {
+		memcpy(&f1InputReportBuffer, DataArray, sizeof(F1InputData_t));
+		f1InputReportBuffer.reportID = F1_INPUT_REPORT_ID;
+		f1InputUpdated = true;
+	}
+
 	uint8_t NewLEDMask = LEDS_NO_LEDS;
 
 	if (DataArray[1])
@@ -197,18 +206,20 @@ void CreateGenericHIDReport(uint8_t* DataArray)
 		an array to hold the report to the host.
 	*/
 
+
+	memcpy(DataArray, &f1InputReportBuffer, sizeof(F1InputData_t));
+/*
 	uint8_t CurrLEDMask = LEDs_GetLEDs();
 	DataArray[0] = F1_INPUT_REPORT_ID; 
 	DataArray[1] = ((CurrLEDMask & LEDS_LED1) ? 1 : 0);
 	DataArray[2] = ((CurrLEDMask & LEDS_LED2) ? 1 : 0);
 	DataArray[3] = ((CurrLEDMask & LEDS_LED3) ? 1 : 0);
 	DataArray[4] = ((CurrLEDMask & LEDS_LED4) ? 1 : 0);
+*/
 }
 
 void HID_Task(void)
 {
-	static bool updated = false;
-
 	/* Device must be connected and configured for the task to run */
 	if (USB_DeviceState != DEVICE_STATE_Configured)
 	  return;
@@ -229,7 +240,6 @@ void HID_Task(void)
 
 			/* Process Generic Report Data */
 			ProcessGenericHIDReport(GenericData);
-			updated = true;
 		}
 
 		/* Finalize the stream transfer to send the last packet */
@@ -239,7 +249,7 @@ void HID_Task(void)
 	Endpoint_SelectEndpoint(GENERIC_IN_EPADDR);
 
 	/* Check to see if the host is ready to accept another packet */
-	if (Endpoint_IsINReady() && updated)
+	if (Endpoint_IsINReady() && f1InputUpdated)
 	{
 		/* Create a temporary buffer to hold the report to send to the host */
 		uint8_t GenericData[sizeof(F1InputData_t)];
@@ -252,7 +262,7 @@ void HID_Task(void)
 
 		/* Finalize the stream transfer to send the last packet */
 		Endpoint_ClearIN();
-		updated = false;
+		f1InputUpdated = false;
 	}
 }
 
