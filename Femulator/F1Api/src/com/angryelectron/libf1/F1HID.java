@@ -28,7 +28,12 @@ import com.codeminders.hidapi.ClassPathLibraryLoader;
 import com.codeminders.hidapi.HIDDevice;
 import com.codeminders.hidapi.HIDDeviceNotFoundException;
 import com.codeminders.hidapi.HIDManager;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -201,6 +206,7 @@ public class F1HID {
      * @throws IOException If device not found or cannot be opened.
      */
     public void open() throws IOException {
+        /* connect to device */
         hidManager = HIDManager.getInstance();
         try {
             hidDevice = hidManager.openById(VENDOR_ID, PRODUCT_ID, null);            
@@ -212,6 +218,9 @@ public class F1HID {
             hidManager.release();
             throw new IOException("Can't open Femulator device.");
         }
+        
+        /* set initial values */
+        defaultState();                
     }
     
     /**
@@ -220,14 +229,15 @@ public class F1HID {
     public void close() {
         try {
             hidDevice.close();
+            hidManager.release();
+            //saveState();
         } catch (Exception ex) {
             /*
              * Don't throw exceptions on close so the program can shut down
              * easily in the event of an error.
              */
             Logger.getLogger(F1HID.class.getName()).log(Level.INFO, null, ex);
-        }
-        hidManager.release();
+        }        
     }
     
     /**
@@ -270,16 +280,11 @@ public class F1HID {
          * Call the apropriate method to update the outputReport
          */
         switch(control.type()) {
-            case ANALOG:
-                if (value > 0xFFF) {
-                    throw new IllegalArgumentException("Value too large (12-bit resolution max).");
-                }
+            case ANALOG:  
+                //TODO: verify this.  Don't think reverseBytes is required.
                 outputReport.putShort(control.pos(), Short.reverseBytes((short)value));
                 break;
-            case ENCODER:
-                if (value > 0xFF) {
-                    throw new IllegalArgumentException("Value too large (8-bit resolution max).");
-                }
+            case ENCODER:                
                 outputReport.put(control.pos(), (byte) value);
                 break;
             case BINARY:
@@ -321,7 +326,7 @@ public class F1HID {
                 /*
                  * Scale velocity to a 12-bit value.
                  */
-                return analogScale * midiValue;
+                return (midiValue == 127) ? 0xFFF : analogScale * midiValue;
             case BINARY:
                 /*
                  * Binary controls are either ON or OFF
@@ -334,9 +339,58 @@ public class F1HID {
                 /*
                  * Midi is 0-127, Encoder values are 0-254.
                  */
-                return midiValue * 2;
+                return (midiValue == 127) ? 0xFF : midiValue * 2;
         }
         return 0;
+    }
+    
+    /**
+     * Save the current control state to disk.
+     */
+    public void saveState() throws IOException {
+        OutputStream out = new FileOutputStream("f1state.bin");
+        out.write(outputReport.array());
+        out.close();
+    }
+    
+    /**
+     * Load a control state from disk.
+     * @throws IOException
+     */
+    public void loadState() throws IOException {
+        try {
+            InputStream in = new FileInputStream("f1state.bin");
+            try {
+                in.read(outputReport.array());
+            } catch (IOException ex) {
+                in.close();
+                throw ex;
+            }
+        } catch (FileNotFoundException ex) {
+            /* saved state not found, so set some default values */
+            defaultState();
+        }
+        send();
+    }
+    
+    /**
+     * Set the Controls to a reasonable default state.  Encoder, Volume, and 
+     * filters are all set to the midway point.  
+     * @throws IOException 
+     */
+    public void defaultState() throws IOException {                    
+        byte[] defaultReport = {OUTPUT_ID, 0x00, 0x00, 0x00, 0x00, 0x7F,             
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07,
+            (byte)0xFF, (byte)0x07            
+        };        
+        outputReport.put(defaultReport);
+        send();
     }
        
 }
