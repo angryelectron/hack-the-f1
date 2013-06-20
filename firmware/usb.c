@@ -38,7 +38,7 @@
 #include "f1.h"
 
 static F1InputData_t f1InputReportBuffer;
-static bool f1InputUpdated = false;
+static bool f1InputUpdated = true;	/* send initial input report on start */
 
 /** Main program entry point. This routine configures the hardware required by the application, then
  *  enters a loop to run the application tasks in sequence.
@@ -46,7 +46,20 @@ static bool f1InputUpdated = false;
 int main(void)
 {
 	SetupHardware();
+
+	/* setup initial input report with volumes, fader, and encoder set to middle positions */
 	f1InputReportBuffer.reportID = F1_INPUT_REPORT_ID;
+	f1InputReportBuffer.pad_state = 0x0000;
+	f1InputReportBuffer.key_state = 0x0000;
+	f1InputReportBuffer.knob_value = 0x7F;
+	f1InputReportBuffer.analog1[0] = 0x07FF; 
+	f1InputReportBuffer.analog1[1] = 0x07FF; 
+	f1InputReportBuffer.analog1[2] = 0x07FF; 
+	f1InputReportBuffer.analog1[3] = 0x07FF; 
+	f1InputReportBuffer.analog2[0] = 0x07FF; 
+	f1InputReportBuffer.analog2[1] = 0x07FF; 
+	f1InputReportBuffer.analog2[2] = 0x07FF; 
+	f1InputReportBuffer.analog2[3] = 0x07FF; 
 
 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 	GlobalInterruptEnable();
@@ -208,6 +221,7 @@ void CreateGenericHIDReport(uint8_t* DataArray)
 
 
 	memcpy(DataArray, &f1InputReportBuffer, sizeof(F1InputData_t));
+
 /*
 	uint8_t CurrLEDMask = LEDs_GetLEDs();
 	DataArray[0] = F1_INPUT_REPORT_ID; 
@@ -223,6 +237,25 @@ void HID_Task(void)
 	/* Device must be connected and configured for the task to run */
 	if (USB_DeviceState != DEVICE_STATE_Configured)
 	  return;
+
+	Endpoint_SelectEndpoint(GENERIC_IN_EPADDR);
+
+	/* Check to see if the host is ready to accept another packet */
+	if (Endpoint_IsINReady() && f1InputUpdated)
+	{
+		/* Create a temporary buffer to hold the report to send to the host */
+		uint8_t GenericData[sizeof(F1InputData_t)];
+
+		/* Create Generic Report Data */
+		CreateGenericHIDReport(GenericData);
+
+		/* Write Generic Report Data */
+		Endpoint_Write_Stream_LE(&GenericData, sizeof(GenericData), NULL);
+
+		/* Finalize the stream transfer to send the last packet */
+		Endpoint_ClearIN();
+		f1InputUpdated = false;
+	}
 
 	Endpoint_SelectEndpoint(GENERIC_OUT_EPADDR);
 
@@ -246,23 +279,5 @@ void HID_Task(void)
 		Endpoint_ClearOUT();
 	}
 
-	Endpoint_SelectEndpoint(GENERIC_IN_EPADDR);
-
-	/* Check to see if the host is ready to accept another packet */
-	if (Endpoint_IsINReady() && f1InputUpdated)
-	{
-		/* Create a temporary buffer to hold the report to send to the host */
-		uint8_t GenericData[sizeof(F1InputData_t)];
-
-		/* Create Generic Report Data */
-		CreateGenericHIDReport(GenericData);
-
-		/* Write Generic Report Data */
-		Endpoint_Write_Stream_LE(&GenericData, sizeof(GenericData), NULL);
-
-		/* Finalize the stream transfer to send the last packet */
-		Endpoint_ClearIN();
-		f1InputUpdated = false;
-	}
 }
 
