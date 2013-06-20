@@ -156,27 +156,11 @@ public class HidTest {
         //doesn't care
         buffer.put(0, (byte)0x02);
         
-        //set volumes and filters to mid-way point
-        for (int v=6; v<=21; v=v+2) {
-            buffer.put(v, (byte)0xff); /* max value is 0x0FFF */
-            buffer.put(v+1, (byte)0x07); /* max value is 0x0FFF */
-        }
-        
-        for (int b = 0; b < 8; b++) {
-            buffer.put(1, (byte)(1<<b));
-            device.write(buffer.array());
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException ex) {
-                //ignore
-            }
-        }
-        
-        //stop all
-        buffer.put(1, (byte)0xFF);
-        buffer.put(3, (byte)(1<<7));
+        //set volumes and filters to mid-way point        
+        buffer.put(5, (byte)0x7F);
+        buffer.put(6, (byte)0xFF);
+        buffer.put(7, (byte)0x07);
         device.write(buffer.array());
-                
         device.close();
         manager.release();  
         //System.exit(0);
