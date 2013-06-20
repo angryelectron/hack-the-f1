@@ -25,7 +25,6 @@ import java.util.Collection;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.ShortMessage;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
